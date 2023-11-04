@@ -12,9 +12,9 @@ const TrainLine = ({ stations, trains }) => {
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(lat1 * (Math.PI / 180)) *
-        Math.cos(lat2 * (Math.PI / 180)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
+      Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c;
     return distance;
@@ -80,8 +80,32 @@ const TrainLine = ({ stations, trains }) => {
   );
 
   return (
-    <div className="lineContainer">
-      <div className="line">
+    <div
+      style={{
+        width: "2600px",
+        height: "100px",
+        backgroundColor: "#f0f0f0",
+        borderRadius: "5px",
+        position: "relative",
+        overflowX: "hidden",
+        padding: "10px 15px",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        position: "absolute",
+        left: "50%",
+        top: "50%",
+        transform: "translate(-50%, -50%)",
+      }}
+    >
+      <div
+        style={{
+          width: "80%",
+          height: "5px",
+          backgroundColor: "#ccc",
+          position: " relative",
+        }}
+      >
         {stations.map((station, index) => {
           const progress = calculateProgress(
             station.longitude,
@@ -96,8 +120,15 @@ const TrainLine = ({ stations, trains }) => {
           return (
             <React.Fragment key={index}>
               <div
-                className="stationCircle"
-                style={{ left: `calc(${progress}% - 5px)` }}
+                style={{
+                  left: `calc(${progress}% - 5px)`,
+                  position: "absolute",
+                  top: "-5px",
+                  height: "10px",
+                  width: "10px",
+                  borderRadius: "50%",
+                  backgroundColor: "#7a316f",
+                }}
               />
               <Tooltip
                 title={trainsAtStation
@@ -106,8 +137,19 @@ const TrainLine = ({ stations, trains }) => {
                 arrow
               >
                 <span
-                  className="stationLabel"
-                  style={{ left: `calc(${progress}% - 30px)` }}
+                  style={{
+                    left: `calc(${progress}% - 30px)`,
+                    position: 'absolute',
+                    top: '15px',
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    height: '20px',
+                    width: '60px',
+                    backgroundColor: '#7a316f',
+                    borderRadius: '5px',
+                    color: 'white',
+                  }}
                 >
                   {station.name}
                 </span>
@@ -143,8 +185,15 @@ const TrainLine = ({ stations, trains }) => {
                 arrow
               >
                 <div
-                  className="vehicle"
-                  style={{ left: `calc(${groupProgress}% - 5px)` }}
+                  style={{
+                    left: `calc(${groupProgress}% - 5px)`,
+                    position: 'absolute',
+                    top: '-10px',
+                    height: '10px',
+                    width: '10px',
+                    borderRadius: '50%',
+                    backgroundColor: '#1d5d9b',
+                  }}
                 />
               </Tooltip>
               <Tooltip
@@ -160,6 +209,16 @@ const TrainLine = ({ stations, trains }) => {
                     height: group.trains.length > 2 ? "35px" : "20px",
                     top: group.trains.length > 2 ? "-50px" : "-40px",
                     backgroundColor: "#1D5D9B",
+                    position: 'absolute',
+                    top: '-40px',
+                    fontSize: '12px',
+                    textAlign: 'center',
+                    height: '20px',
+                    width: '50px',
+                    backgroundColor: 'gray',
+                    bottom: '30px',
+                    borderRadius: '5px',
+                    color: 'white',
                   }}
                 >
                   {groupLabel}
