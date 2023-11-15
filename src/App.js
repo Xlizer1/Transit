@@ -1,5 +1,5 @@
 import "./App.css";
-import React from "react";
+import React, { useEffect } from "react";
 
 const App = () => {
   const startVertical = [
@@ -129,6 +129,12 @@ const App = () => {
     { id: 5, name: "كركوك البضائع" },
     { id: 6, name: "كركوك المسافرين" },
   ];
+  
+  useEffect(() => {
+    const centerHeight = document.body.scrollHeight / 2.2;
+    const centerWidth = document.body.scrollWidth / 2.1;
+    window.scrollTo(centerWidth, centerHeight);
+  }, []);
 
   return (
     <div className="App">
@@ -157,7 +163,7 @@ const App = () => {
                   height: "20px",
                   width: "20px",
                   borderRadius: "50%",
-                  backgroundColor: "#7a316f",
+                  backgroundColor: "#1c1c1c",
                 }}
               >
                 <span
@@ -168,7 +174,7 @@ const App = () => {
                     top: index % 2 === 0 ? "50px" : "-110px",
                     fontWeight: "bold",
                     textAlign: "center",
-                    backgroundColor: "#7a316f",
+                    backgroundColor: "#1c1c1c",
                     borderRadius: "15px",
                     color: "white",
                     fontSize: "42px",
@@ -209,7 +215,7 @@ const App = () => {
                   height: "20px",
                   width: "20px",
                   borderRadius: "50%",
-                  backgroundColor: "#7a316f",
+                  backgroundColor: "#1c1c1c",
                 }}
               >
                 <span
@@ -223,7 +229,7 @@ const App = () => {
                     textAlign: "center",
                     // height: "20px",
                     minWidth: "230px",
-                    backgroundColor: "#7a316f",
+                    backgroundColor: "#1c1c1c",
                     borderRadius: "15px",
                     color: "white",
                     transform: "rotate(-90deg)",
@@ -263,7 +269,7 @@ const App = () => {
                   height: "20px",
                   width: "20px",
                   borderRadius: "50%",
-                  backgroundColor: "#7a316f",
+                  backgroundColor: "#1c1c1c",
                 }}
               >
                 <span
@@ -277,7 +283,7 @@ const App = () => {
                     textAlign: "center",
                     // height: "20px",
                     minWidth: "230px",
-                    backgroundColor: "#7a316f",
+                    backgroundColor: "#1c1c1c",
                     borderRadius: "15px",
                     color: "white",
                     transform: "rotate(90deg)",
@@ -318,7 +324,7 @@ const App = () => {
                   height: "20px",
                   width: "20px",
                   borderRadius: "50%",
-                  backgroundColor: "#7a316f",
+                  backgroundColor: "#1c1c1c",
                 }}
               >
                 <span
@@ -329,7 +335,7 @@ const App = () => {
                     display: "block",
                     fontWeight: "bold",
                     textAlign: "center",
-                    backgroundColor: "#7a316f",
+                    backgroundColor: "#1c1c1c",
                     borderRadius: "15px",
                     color: "white",
                     transform: "rotate(125deg)",
@@ -371,7 +377,7 @@ const App = () => {
                   height: "20px",
                   width: "20px",
                   borderRadius: "50%",
-                  backgroundColor: "#7a316f",
+                  backgroundColor: "#1c1c1c",
                 }}
               >
                 <span
@@ -383,7 +389,7 @@ const App = () => {
                     fontSize: "12px",
                     fontWeight: "bold",
                     textAlign: "center",
-                    backgroundColor: "#7a316f",
+                    backgroundColor: "#1c1c1c",
                     borderRadius: "15px",
                     color: "white",
                     fontSize: "42px",
@@ -424,7 +430,7 @@ const App = () => {
                   height: "20px",
                   width: "20px",
                   borderRadius: "50%",
-                  backgroundColor: "#7a316f",
+                  backgroundColor: "#1c1c1c",
                 }}
               >
                 <span
@@ -438,7 +444,7 @@ const App = () => {
                     textAlign: "center",
                     // height: "20px",
                     minWidth: "230px",
-                    backgroundColor: "#7a316f",
+                    backgroundColor: "#1c1c1c",
                     borderRadius: "15px",
                     color: "white",
                     transform: "rotate(90deg)",
