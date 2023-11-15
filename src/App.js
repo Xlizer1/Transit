@@ -169,7 +169,7 @@ const App = () => {
                     fontWeight: "bold",
                     textAlign: "center",
                     backgroundColor: "#7a316f",
-                    borderRadius: "5px",
+                    borderRadius: "15px",
                     color: "white",
                     fontSize: "42px",
                     minWidth: "230px",
