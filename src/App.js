@@ -131,8 +131,8 @@ const App = () => {
   ];
   
   useEffect(() => {
-    const centerHeight = document.body.scrollHeight / 2.2;
-    const centerWidth = document.body.scrollWidth / 2.1;
+    const centerHeight = document.body.scrollHeight / 1.547;
+    const centerWidth = document.body.scrollWidth / 1.8;
     window.scrollTo(centerWidth, centerHeight);
   }, []);
 
