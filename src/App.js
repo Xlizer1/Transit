@@ -1,131 +1,458 @@
 import "./App.css";
-import React, { useEffect, useState } from "react";
-import TrainLine from "./components/TrainLine";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import axios from "axios";
-
-const theme = createTheme();
+import React from "react";
 
 const App = () => {
-  const stations = [
-    { id: 1, name: "Station A", longitude: -122.4194, latitude: 37.7749 },
-    { id: 2, name: "Station B", longitude: -122.0868, latitude: 37.3297 },
-    { id: 3, name: "Station C", longitude: -121.8863, latitude: 37.3541 },
-    { id: 4, name: "Station D", longitude: -122.0308, latitude: 36.9741 },
-    { id: 5, name: "Station E", longitude: -122.4194, latitude: 36.7783 },
-    { id: 6, name: "Station A", longitude: -122.4194, latitude: 37.7749 },
-    { id: 7, name: "Station B", longitude: -122.0868, latitude: 37.3297 },
-    { id: 8, name: "Station C", longitude: -121.8863, latitude: 37.3541 },
-    { id: 9, name: "Station D", longitude: -122.0308, latitude: 36.9741 },
-    { id: 10, name: "Station E", longitude: -122.4194, latitude: 36.7783 },
-    { id: 11, name: "Station A", longitude: -122.4194, latitude: 37.7749 },
-    { id: 12, name: "Station B", longitude: -122.0868, latitude: 37.3297 },
-    { id: 13, name: "Station C", longitude: -121.8863, latitude: 37.3541 },
-    { id: 14, name: "Station D", longitude: -122.0308, latitude: 36.9741 },
-    { id: 15, name: "Station E", longitude: -122.4194, latitude: 36.7783 },
-    { id: 16, name: "Station A", longitude: -122.4194, latitude: 37.7749 },
-    { id: 17, name: "Station B", longitude: -122.0868, latitude: 37.3297 },
-    { id: 18, name: "Station C", longitude: -121.8863, latitude: 37.3541 },
-    { id: 19, name: "Station D", longitude: -122.0308, latitude: 36.9741 },
-    { id: 20, name: "Station E", longitude: -122.4194, latitude: 36.7783 },
-    { id: 21, name: "Station A", longitude: -122.4194, latitude: 37.7749 },
-    { id: 22, name: "Station B", longitude: -122.0868, latitude: 37.3297 },
-    { id: 23, name: "Station C", longitude: -121.8863, latitude: 37.3541 },
-    { id: 24, name: "Station D", longitude: -122.0308, latitude: 36.9741 },
-    { id: 25, name: "Station E", longitude: -122.4194, latitude: 36.7783 },
-    { id: 26, name: "Station A", longitude: -122.4194, latitude: 37.7749 },
-    { id: 27, name: "Station B", longitude: -122.0868, latitude: 37.3297 },
-    { id: 28, name: "Station C", longitude: -121.8863, latitude: 37.3541 },
-    { id: 29, name: "Station D", longitude: -122.0308, latitude: 36.9741 },
-    { id: 30, name: "Station E", longitude: -122.4194, latitude: 36.7783 },
-    { id: 31, name: "Station A", longitude: -122.4194, latitude: 37.7749 },
-    { id: 32, name: "Station B", longitude: -122.0868, latitude: 37.3297 },
-    { id: 33, name: "Station C", longitude: -121.8863, latitude: 37.3541 },
-    { id: 34, name: "Station D", longitude: -122.0308, latitude: 36.9741 },
-    { id: 35, name: "Station E", longitude: -122.4194, latitude: 36.7783 },
-    { id: 36, name: "Station A", longitude: -122.4194, latitude: 37.7749 },
-    { id: 37, name: "Station B", longitude: -122.0868, latitude: 37.3297 },
-    { id: 38, name: "Station C", longitude: -121.8863, latitude: 37.3541 },
-    { id: 39, name: "Station D", longitude: -122.0308, latitude: 36.9741 },
-    { id: 40, name: "Station E", longitude: -122.4194, latitude: 36.7783 },
-    { id: 41, name: "Station A", longitude: -122.4194, latitude: 37.7749 },
-    { id: 42, name: "Station B", longitude: -122.0868, latitude: 37.3297 },
-    { id: 43, name: "Station C", longitude: -121.8863, latitude: 37.3541 },
-    { id: 44, name: "Station D", longitude: -122.0308, latitude: 36.9741 },
-    { id: 45, name: "Station E", longitude: -122.4194, latitude: 36.7783 },
-    { id: 46, name: "Station A", longitude: -122.4194, latitude: 37.7749 },
-    { id: 47, name: "Station B", longitude: -122.0868, latitude: 37.3297 },
-    { id: 48, name: "Station C", longitude: -121.8863, latitude: 37.3541 },
-    { id: 49, name: "Station D", longitude: -122.0308, latitude: 36.9741 },
-    { id: 50, name: "Station E", longitude: -122.4194, latitude: 36.7783 },
-    { id: 51, name: "Station A", longitude: -122.4194, latitude: 37.7749 },
-    { id: 52, name: "Station B", longitude: -122.0868, latitude: 37.3297 },
-    { id: 53, name: "Station C", longitude: -121.8863, latitude: 37.3541 },
-    { id: 54, name: "Station D", longitude: -122.0308, latitude: 36.9741 },
-    { id: 55, name: "Station E", longitude: -122.4194, latitude: 36.7783 },
-    { id: 56, name: "Station A", longitude: -122.4194, latitude: 37.7749 },
-    { id: 57, name: "Station B", longitude: -122.0868, latitude: 37.3297 },
-    { id: 58, name: "Station C", longitude: -121.8863, latitude: 37.3541 },
-    { id: 59, name: "Station D", longitude: -122.0308, latitude: 36.9741 },
-    { id: 60, name: "Station E", longitude: -122.4194, latitude: 36.7783 },
-    { id: 61, name: "Station A", longitude: -122.4194, latitude: 37.7749 },
-    { id: 62, name: "Station B", longitude: -122.0868, latitude: 37.3297 },
-    { id: 63, name: "Station C", longitude: -121.8863, latitude: 37.3541 },
-    { id: 64, name: "Station D", longitude: -122.0308, latitude: 36.9741 },
-    { id: 65, name: "Station E", longitude: -122.4194, latitude: 36.7783 },
-    { id: 66, name: "Station A", longitude: -122.4194, latitude: 37.7749 },
-    { id: 67, name: "Station B", longitude: -122.0868, latitude: 37.3297 },
-    { id: 68, name: "Station C", longitude: -121.8863, latitude: 37.3541 },
-    { id: 69, name: "Station D", longitude: -122.0308, latitude: 36.9741 },
-    { id: 70, name: "Station E", longitude: -122.4194, latitude: 36.7783 },
-    { id: 71, name: "Station A", longitude: -122.4194, latitude: 37.7749 },
-    { id: 72, name: "Station B", longitude: -122.0868, latitude: 37.3297 },
-    { id: 73, name: "Station C", longitude: -121.8863, latitude: 37.3541 },
-    { id: 74, name: "Station D", longitude: -122.0308, latitude: 36.9741 },
-    { id: 75, name: "Station E", longitude: -122.4194, latitude: 36.7783 },
-    { id: 76, name: "Station A", longitude: -122.4194, latitude: 37.7749 },
-    { id: 77, name: "Station B", longitude: -122.0868, latitude: 37.3297 },
-    { id: 78, name: "Station C", longitude: -121.8863, latitude: 37.3541 },
-    { id: 79, name: "Station D", longitude: -122.0308, latitude: 36.9741 },
-    { id: 80, name: "Station E", longitude: -122.4194, latitude: 36.7783 },
-    { id: 81, name: "Station A", longitude: -122.4194, latitude: 37.7749 },
-    { id: 82, name: "Station B", longitude: -122.0868, latitude: 37.3297 },
-    { id: 83, name: "Station C", longitude: -121.8863, latitude: 37.3541 },
-    { id: 84, name: "Station D", longitude: -122.0308, latitude: 36.9741 },
-    { id: 85, name: "Station E", longitude: -122.4194, latitude: 36.7783 },
-    { id: 86, name: "Station A", longitude: -122.4194, latitude: 37.7749 },
-    { id: 87, name: "Station B", longitude: -122.0868, latitude: 37.3297 },
-    { id: 88, name: "Station C", longitude: -121.8863, latitude: 37.3541 },
-    { id: 89, name: "Station D", longitude: -122.0308, latitude: 36.9741 },
-    { id: 90, name: "Station E", longitude: -122.4194, latitude: 36.7783 },
-    { id: 91, name: "Station A", longitude: -122.4194, latitude: 37.7749 },
-    { id: 92, name: "Station B", longitude: -122.0868, latitude: 37.3297 },
-    { id: 93, name: "Station C", longitude: -121.8863, latitude: 37.3541 },
-    { id: 94, name: "Station D", longitude: -122.0308, latitude: 36.9741 },
-    { id: 95, name: "Station E", longitude: -122.4194, latitude: 36.7783 },
-    { id: 96, name: "Station A", longitude: -122.4194, latitude: 37.7749 },
-    { id: 97, name: "Station B", longitude: -122.0868, latitude: 37.3297 },
-    { id: 98, name: "Station C", longitude: -121.8863, latitude: 37.3541 },
-    { id: 99, name: "Station D", longitude: -122.0308, latitude: 36.9741 },
-    { id: 90, name: "Station E", longitude: -122.4194, latitude: 36.7783 },
-    { id: 101, name: "Station A", longitude: -122.4194, latitude: 37.7749 },
-    { id: 102, name: "Station B", longitude: -122.0868, latitude: 37.3297 },
-    { id: 103, name: "Station C", longitude: -121.8863, latitude: 37.3541 },
-    { id: 104, name: "Station D", longitude: -122.0308, latitude: 36.9741 },
-    { id: 105, name: "Station E", longitude: -122.4194, latitude: 36.7783 },
-    { id: 106, name: "Station A", longitude: -122.4194, latitude: 37.7749 },
-    { id: 107, name: "Station B", longitude: -122.0868, latitude: 37.3297 },
-    { id: 108, name: "Station C", longitude: -121.8863, latitude: 37.3541 },
-    { id: 109, name: "Station D", longitude: -122.0308, latitude: 36.9741 },
-    { id: 110, name: "Station E", longitude: -122.4194, latitude: 36.7783 },
+  const startVertical = [
+    { id: 1, name: "الزبير" },
+    { id: 2, name: "المربد" },
+    { id: 3, name: "ام قصر" },
+  ];
+
+  const southToNorth = [
+    { id: 1, name: "المعقل" },
+    { id: 2, name: "الشعبية" },
+    { id: 3, name: "الطوبة" },
+    { id: 4, name: "الرملية" },
+    { id: 5, name: "ارطاوي" },
+    { id: 6, name: "الغبيشة" },
+    { id: 7, name: "لقيط" },
+    { id: 8, name: "الشويعرية" },
+    { id: 9, name: "الكرماشية" },
+    { id: 10, name: "سوق الشيوخ" },
+    { id: 11, name: "الخندق" },
+    { id: 12, name: "الناصرية" },
+    { id: 13, name: "القوزية" },
+    { id: 14, name: "البطحة" },
+    { id: 15, name: "الدراجي" },
+    { id: 16, name: "الخضر" },
+    { id: 17, name: "الخافورة" },
+    { id: 18, name: "السماوة" },
+    { id: 19, name: "ساوة" },
+    { id: 20, name: "الحجامة" },
+    { id: 21, name: "الرمثية" },
+    { id: 22, name: "ابو طبيخ" },
+    { id: 23, name: "الحمزة" },
+    { id: 24, name: "نبي مدين" },
+    { id: 25, name: "الديوانية" },
+    { id: 26, name: "السينية" },
+    { id: 27, name: "الشريفية" },
+    { id: 28, name: "قوجان" },
+    { id: 29, name: "الهاشمية" },
+    { id: 30, name: "حديد" },
+    { id: 31, name: "الحلة" },
+    { id: 32, name: "المحاويل" },
+    { id: 33, name: "المسيب" },
+    { id: 34, name: "الاسكندرية" },
+    { id: 35, name: "المحمودية" },
+    { id: 44, name: "اليوسفية" },
+    { id: 44, name: "الدورة" },
+    { id: 38, name: "المنصور" },
+    { id: 39, name: "المحطة المركزية" },
+    { id: 40, name: "ساحة الرصف" },
+    { id: 41, name: "الكاظمية" },
+
+    { id: 41, name: "التاجي" },
+    { id: 41, name: "المشاهدة" },
+    { id: 41, name: "الدجيل" },
+    { id: 41, name: "بلد" },
+    { id: 41, name: "الاسحاقي" },
+    { id: 41, name: "سامراء" },
+    { id: 41, name: "العباسي" },
+    { id: 41, name: "امام دور" },
+    { id: 41, name: "تكريت" },
+    { id: 41, name: "الرياش" },
+    { id: 41, name: "بيجي" },
+    { id: 41, name: "حليوان" },
+    { id: 41, name: "عين الدبس" },
+    { id: 41, name: "تلول البق" },
+    { id: 41, name: "الجوناف" },
+    { id: 41, name: "وادي المر" },
+    { id: 41, name: "القيارة" },
+    { id: 41, name: "الشورة" },
+    { id: 41, name: "حمام العليل" },
+    { id: 41, name: "الموصل" },
+    { id: 41, name: "صابونية" },
+    { id: 41, name: "وائلية" },
+    { id: 41, name: "عوينات" },
+    { id: 41, name: "ربيعة" },
+  ];
+
+  const angle = [
+    { id: 1, name: "الصينية" },
+    { id: 2, name: "الثرثار" },
+    { id: 3, name: "الصفاء" },
+    { id: 4, name: "الوادي" },
+    { id: 5, name: "الهضاب" },
+    { id: 6, name: "العطاء" },
+  ];
+
+  const horizontalWest = [
+    { id: 6, name: "عكاشات" },
+    { id: 5, name: "الرتقة" },
+    { id: 4, name: "الواحة" },
+    { id: 3, name: "العنقاء" },
+    { id: 2, name: "المجمع" },
+    { id: 1, name: "الاسمدة" },
+  ];
+
+  const west = [
+    { id: 1, name: "ابو غريب" },
+    { id: 2, name: "شيخ ضاري" },
+    { id: 3, name: "الكوفة" },
+    { id: 4, name: "الفلوجة" },
+    { id: 5, name: "الحبانية" },
+    { id: 6, name: "الخالدية" },
+    { id: 7, name: "رمادي شرق" },
+    { id: 8, name: "رمادي غرب" },
+    { id: 9, name: "الرطبة" },
+    { id: 10, name: "المحمدي" },
+    { id: 11, name: "هيث" },
+    { id: 12, name: "المرج" },
+    { id: 13, name: "البيادر" },
+    { id: 14, name: "البغدادي" },
+    { id: 15, name: "حوران" },
+    { id: 16, name: "المقلانية" },
+    { id: 17, name: "حديثه" },
+    { id: 18, name: "الفحيمي" },
+    { id: 19, name: "عنه" },
+    { id: 20, name: "جباب" },
+    { id: 21, name: "ميثاق" },
+    { id: 22, name: "القائم" },
+    { id: 23, name: "حصيبة" },
+  ];
+
+  const est = [
+    { id: 1, name: "الفتحة" },
+    { id: 2, name: "المراعي" },
+    { id: 3, name: "الرياض" },
+    { id: 4, name: "الثورة" },
+    { id: 5, name: "كركوك البضائع" },
+    { id: 6, name: "كركوك المسافرين" },
   ];
 
   return (
-    <ThemeProvider theme={theme}>
-      <div className="App">
-        <TrainLine stations={stations} trains={trains} />
+    <div className="App">
+      <div
+        style={{
+          width: "14740px",
+          height: "15px",
+          backgroundColor: "#ccc",
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          display: "flex",
+          gap: "30px",
+          borderRadius: "15px",
+        }}
+      >
+        {southToNorth.map((station, index) => {
+          return (
+            <React.Fragment key={index}>
+              <div
+                style={{
+                  // left: `calc(${progress}% - 5px)`,
+                  position: "relative",
+                  marginRight: "180px",
+                  height: "20px",
+                  width: "20px",
+                  borderRadius: "50%",
+                  backgroundColor: "#7a316f",
+                }}
+              >
+                <span
+                  style={{
+                    left: `-100px`,
+                    position: "relative",
+                    display: "block",
+                    top: index % 2 === 0 ? "50px" : "-110px",
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    backgroundColor: "#7a316f",
+                    borderRadius: "5px",
+                    color: "white",
+                    fontSize: "42px",
+                    minWidth: "230px",
+                    padding: "15px",
+                  }}
+                >
+                  {station.name}
+                </span>
+              </div>
+            </React.Fragment>
+          );
+        })}
       </div>
-    </ThemeProvider>
+      <div
+        style={{
+          width: "700px",
+          height: "15px",
+          backgroundColor: "#ccc",
+          position: "absolute",
+          top: "57%",
+          left: "14.34%",
+          display: "flex",
+          gap: "30px",
+          borderRadius: "15px",
+          transform: "translate(-50%, -50%) rotate(90deg)",
+          zIndex: -1,
+        }}
+      >
+        {startVertical.map((station, index) => {
+          return (
+            <React.Fragment key={index}>
+              <div
+                style={{
+                  // left: `calc(${progress}% - 5px)`,
+                  position: "relative",
+                  marginLeft: "194px",
+                  height: "20px",
+                  width: "20px",
+                  borderRadius: "50%",
+                  backgroundColor: "#7a316f",
+                }}
+              >
+                <span
+                  style={{
+                    left: `-103px`,
+                    position: "absolute",
+                    display: "block",
+                    top: index % 2 === 0 ? "130px" : "-220px",
+                    fontSize: "42px",
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    // height: "20px",
+                    minWidth: "230px",
+                    backgroundColor: "#7a316f",
+                    borderRadius: "15px",
+                    color: "white",
+                    transform: "rotate(-90deg)",
+                    padding: "15px",
+                  }}
+                >
+                  {station.name}
+                </span>
+              </div>
+            </React.Fragment>
+          );
+        })}
+      </div>
+      <div
+        style={{
+          width: "4800px",
+          height: "15px",
+          backgroundColor: "#ccc",
+          position: "absolute",
+          top: "2%",
+          left: "59.195%",
+          display: "flex",
+          gap: "30px",
+          borderRadius: "15px",
+          transform: "translate(-50%, -50%) rotate(-90deg)",
+          zIndex: -1,
+        }}
+      >
+        {west.map((station, index) => {
+          return (
+            <React.Fragment key={index}>
+              <div
+                style={{
+                  // left: `calc(${progress}% - 5px)`,
+                  position: "relative",
+                  marginLeft: "160px",
+                  height: "20px",
+                  width: "20px",
+                  borderRadius: "50%",
+                  backgroundColor: "#7a316f",
+                }}
+              >
+                <span
+                  style={{
+                    left: `-103px`,
+                    position: "absolute",
+                    display: "block",
+                    top: index % 2 === 0 ? "130px" : "-220px",
+                    fontSize: "42px",
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    // height: "20px",
+                    minWidth: "230px",
+                    backgroundColor: "#7a316f",
+                    borderRadius: "15px",
+                    color: "white",
+                    transform: "rotate(90deg)",
+                    padding: "15px",
+                  }}
+                >
+                  {station.name}
+                </span>
+              </div>
+            </React.Fragment>
+          );
+        })}
+      </div>
+      <div
+        style={{
+          width: "4190px",
+          height: "15px",
+          backgroundColor: "#ccc",
+          position: "absolute",
+          top: "16.8%",
+          left: "65.55%",
+          display: "flex",
+          gap: "30px",
+          borderRadius: "15px",
+          transform: "translate(-50%, -50%) rotate(-127.3deg)",
+          zIndex: -2,
+        }}
+      >
+        {angle.map((station, index) => {
+          return (
+            <React.Fragment key={index}>
+              <div
+                style={{
+                  // left: `calc(${progress}% - 5px)`,
+                  position: "relative",
+                  marginRight: "330px",
+                  marginLeft: "300px",
+                  height: "20px",
+                  width: "20px",
+                  borderRadius: "50%",
+                  backgroundColor: "#7a316f",
+                }}
+              >
+                <span
+                  style={{
+                    left: `-220px`,
+                    top: "120px",
+                    position: "relative",
+                    display: "block",
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    backgroundColor: "#7a316f",
+                    borderRadius: "15px",
+                    color: "white",
+                    transform: "rotate(125deg)",
+                    fontSize: "42px",
+                    minWidth: "230px",
+                    padding: "15px",
+                  }}
+                >
+                  {station.name}
+                </span>
+              </div>
+            </React.Fragment>
+          );
+        })}
+      </div>
+      <div
+        style={{
+          width: "3970px",
+          height: "15px",
+          backgroundColor: "#ccc",
+          position: "absolute",
+          top: "-41.7%",
+          left: "51%",
+          display: "flex",
+          gap: "30px",
+          borderRadius: "15px",
+          transform: "translate(-50%, -50%) ",
+          zIndex: -2,
+        }}
+      >
+        {horizontalWest.map((station, index) => {
+          return (
+            <React.Fragment key={index}>
+              <div
+                style={{
+                  // left: `calc(${progress}% - 5px)`,
+                  position: "relative",
+                  marginRight: "740px",
+                  height: "20px",
+                  width: "20px",
+                  borderRadius: "50%",
+                  backgroundColor: "#7a316f",
+                }}
+              >
+                <span
+                  style={{
+                    left: `-100px`,
+                    position: "relative",
+                    display: "block",
+                    top: index % 2 === 0 ? "60px" : "-120px",
+                    fontSize: "12px",
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    backgroundColor: "#7a316f",
+                    borderRadius: "15px",
+                    color: "white",
+                    fontSize: "42px",
+                    minWidth: "230px",
+                    padding: "15px",
+                  }}
+                >
+                  {station.name}
+                </span>
+              </div>
+            </React.Fragment>
+          );
+        })}
+      </div>
+      <div
+        style={{
+          width: "1400px",
+          height: "15px",
+          backgroundColor: "#ccc",
+          position: "absolute",
+          top: "64%",
+          left: "71.85%",
+          display: "flex",
+          gap: "30px",
+          borderRadius: "15px",
+          transform: "translate(-50%, -50%) rotate(-90deg)",
+          zIndex: -1,
+        }}
+      >
+        {est.map((station, index) => {
+          return (
+            <React.Fragment key={index}>
+              <div
+                style={{
+                  // left: `calc(${progress}% - 5px)`,
+                  position: "relative",
+                  marginRight: "180px",
+                  height: "20px",
+                  width: "20px",
+                  borderRadius: "50%",
+                  backgroundColor: "#7a316f",
+                }}
+              >
+                <span
+                  style={{
+                    left: `-105px`,
+                    position: "absolute",
+                    display: "block",
+                    top: index % 2 === 0 ? "120px" : "-210px",
+                    fontSize: "42px",
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    // height: "20px",
+                    minWidth: "230px",
+                    backgroundColor: "#7a316f",
+                    borderRadius: "15px",
+                    color: "white",
+                    transform: "rotate(90deg)",
+                    padding: "15px",
+                  }}
+                >
+                  {station.name}
+                </span>
+              </div>
+            </React.Fragment>
+          );
+        })}
+      </div>
+    </div>
   );
 };
 
