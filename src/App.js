@@ -1,6 +1,7 @@
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import "./App.css";
 import React, { useEffect } from "react";
+import irr from "./assets/irr.gif";
 
 const App = () => {
   // const trains = [
@@ -138,267 +139,96 @@ const App = () => {
     { id: 6, name: "كركوك المسافرين" },
   ];
 
-  // useEffect(() => {
-  //   const centerHeight = document.body.scrollHeight / 1.547;
-  //   const centerWidth = document.body.scrollWidth / 1.8;
-  //   window.scrollTo(centerWidth, centerHeight);
-  // }, []);
+  useEffect(() => {
+    const centerHeight = document.body.scrollHeight / 1.547;
+    const centerWidth = document.body.scrollWidth / 1.8;
+    window.scrollTo(centerWidth, centerHeight);
+  }, []);
+
+  const divWidth = 15300;
+  const divHeight = 6500;
+  const initialPositionX = -7650;
+  const initialPositionY = -3150;
 
   return (
     <div className="App">
-      <TransformWrapper
-        initialScale={1}
-        initialPositionX={7650}
-        initialPositionY={3250}
+      <div
+        style={{
+          width: "100vw",
+          height: "100px",
+          borderBottom: "2px solid #616161",
+          display: "flex",
+          alignItems: "center",
+          paddingRight: "20px",
+          paddingLeft: "20px",
+        }}
+      ><img src={irr} alt="#" width="70px" height="70px" /></div>
+      <div
+        className="zoom"
+        style={{
+          width: "100vw",
+          height: "84.4vh",
+          // backgroundColor: "#d3d3d3",
+          overflow: "hidden",
+        }}
       >
-        <TransformComponent>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "6500px",
-              width: "15300px",
-              position: "relative",
-              scale: "0.07",
-              backgroundColor: "#d3d3d3",
-              zIndex: -10,
-              top: 0,
-              left: 0
-            }}
-          >
+        <TransformWrapper
+          initialScale={1}
+          initialPositionX={initialPositionX}
+          initialPositionY={initialPositionY}
+          minPositionX={0}
+          minPositionY={0}
+          limitToBounds={false}
+        >
+          {({ zoomIn, zoomOut, ...rest }) => (
             <div
               style={{
-                width: "15000px",
-                height: "20px",
-                backgroundColor: "#ccc",
-                position: "relative",
-                display: "flex",
-                gap: "30px",
-                borderRadius: "15px",
-                bottom: "-1700px",
+                width: "30px",
+                height: "100px",
+                backgroundColor: "red",
+                position: "absolute",
+                zIndex: 10,
+                bottom: 0,
+                right: 0,
               }}
             >
-              {southToNorth.map((station, index) => {
-                return (
-                  <React.Fragment key={index}>
-                    <div
-                      style={{
-                        display: "block",
-                        marginLeft: index === 0 ? 0 : "184px",
-                        height: "20px",
-                        width: "20px",
-                        borderRadius: "50%",
-                        backgroundColor: "#1c1c1c",
-                      }}
-                    >
-                      <span
+              <button onClick={zoomIn}>+</button>
+              <button onClick={zoomOut}>-</button>
+            </div>
+          )}
+          <TransformComponent>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: `${divHeight}px`,
+                width: `${divWidth}px`,
+                position: "relative",
+                // backgroundColor: "blueviolet",
+                zIndex: "-10",
+                scale: "0.2",
+              }}
+            >
+              <div
+                style={{
+                  width: "15000px",
+                  height: "20px",
+                  backgroundColor: "#ccc",
+                  position: "relative",
+                  display: "flex",
+                  gap: "30px",
+                  borderRadius: "15px",
+                  bottom: "-1700px",
+                }}
+              >
+                {southToNorth.map((station, index) => {
+                  return (
+                    <React.Fragment key={index}>
+                      <div
                         style={{
-                          left: `-100px`,
-                          position: "relative",
                           display: "block",
-                          top: index % 2 === 0 ? "50px" : "-110px",
-                          fontWeight: "bold",
-                          textAlign: "center",
-                          backgroundColor: "#1c1c1c",
-                          borderRadius: "15px",
-                          color: "white",
-                          fontSize: "42px",
-                          minWidth: "230px",
-                          padding: "15px",
-                        }}
-                      >
-                        {station.name}
-                      </span>
-                    </div>
-                  </React.Fragment>
-                );
-              })}
-              <div
-                style={{
-                  width: "700px",
-                  height: "20px",
-                  backgroundColor: "#ccc",
-                  position: "absolute",
-                  top: "360px",
-                  left: "243px",
-                  display: "flex",
-                  gap: "30px",
-                  borderRadius: "15px",
-                  transform: "translate(-50%, -50%) rotate(90deg)",
-                  zIndex: -1,
-                }}
-              >
-                {startVertical.map((station, index) => {
-                  return (
-                    <React.Fragment key={index}>
-                      <div
-                        style={{
-                          // left: `calc(${progress}% - 5px)`,
-                          position: "relative",
-                          marginLeft: "194px",
-                          height: "20px",
-                          width: "20px",
-                          borderRadius: "50%",
-                          backgroundColor: "#1c1c1c",
-                        }}
-                      >
-                        <span
-                          style={{
-                            left: `-103px`,
-                            position: "absolute",
-                            display: "block",
-                            top: index % 2 === 0 ? "130px" : "-220px",
-                            fontSize: "42px",
-                            fontWeight: "bold",
-                            textAlign: "center",
-                            // height: "20px",
-                            minWidth: "230px",
-                            backgroundColor: "#1c1c1c",
-                            borderRadius: "15px",
-                            color: "white",
-                            transform: "rotate(-90deg)",
-                            padding: "15px",
-                          }}
-                        >
-                          {station.name}
-                        </span>
-                      </div>
-                    </React.Fragment>
-                  );
-                })}
-              </div>
-              <div
-                style={{
-                  width: "4800px",
-                  height: "20px",
-                  backgroundColor: "#ccc",
-                  position: "absolute",
-                  bottom: "2390px",
-                  left: "9368px",
-                  display: "flex",
-                  gap: "30px",
-                  borderRadius: "15px",
-                  transform: "translate(-50%, -50%) rotate(-90deg)",
-                  zIndex: -1,
-                }}
-              >
-                {west.map((station, index) => {
-                  return (
-                    <React.Fragment key={index}>
-                      <div
-                        style={{
-                          // left: `calc(${progress}% - 5px)`,
-                          position: "relative",
-                          marginLeft: "160px",
-                          height: "20px",
-                          width: "20px",
-                          borderRadius: "50%",
-                          backgroundColor: "#1c1c1c",
-                        }}
-                      >
-                        <span
-                          style={{
-                            left: `-103px`,
-                            position: "absolute",
-                            display: "block",
-                            top: index % 2 === 0 ? "130px" : "-220px",
-                            fontSize: "42px",
-                            fontWeight: "bold",
-                            textAlign: "center",
-                            // height: "20px",
-                            minWidth: "230px",
-                            backgroundColor: "#1c1c1c",
-                            borderRadius: "15px",
-                            color: "white",
-                            transform: "rotate(90deg)",
-                            padding: "15px",
-                          }}
-                        >
-                          {station.name}
-                        </span>
-                      </div>
-                    </React.Fragment>
-                  );
-                })}
-              </div>
-              <div
-                style={{
-                  width: "4200px",
-                  height: "20px",
-                  backgroundColor: "#ccc",
-                  position: "absolute",
-                  bottom: "1650px",
-                  left: "10655px",
-                  display: "flex",
-                  gap: "30px",
-                  borderRadius: "15px",
-                  transform: "translate(-50%, -50%) rotate(-127.8deg)",
-                  zIndex: -2,
-                }}
-              >
-                {angle.map((station, index) => {
-                  return (
-                    <React.Fragment key={index}>
-                      <div
-                        style={{
-                          // left: `calc(${progress}% - 5px)`,
-                          position: "relative",
-                          marginRight: "330px",
-                          marginLeft: "300px",
-                          height: "20px",
-                          width: "20px",
-                          borderRadius: "50%",
-                          backgroundColor: "#1c1c1c",
-                        }}
-                      >
-                        <span
-                          style={{
-                            left: `-220px`,
-                            top: "120px",
-                            position: "relative",
-                            display: "block",
-                            fontWeight: "bold",
-                            textAlign: "center",
-                            backgroundColor: "#1c1c1c",
-                            borderRadius: "15px",
-                            color: "white",
-                            transform: "rotate(127.3deg)",
-                            fontSize: "42px",
-                            minWidth: "230px",
-                            padding: "15px",
-                          }}
-                        >
-                          {station.name}
-                        </span>
-                      </div>
-                    </React.Fragment>
-                  );
-                })}
-              </div>
-              <div
-                style={{
-                  width: "3970px",
-                  height: "20px",
-                  backgroundColor: "#ccc",
-                  position: "absolute",
-                  bottom: "4780px",
-                  left: "7800px",
-                  display: "flex",
-                  gap: "30px",
-                  borderRadius: "15px",
-                  transform: "translate(-50%, -50%)",
-                  zIndex: -2,
-                }}
-              >
-                {horizontalWest.map((station, index) => {
-                  return (
-                    <React.Fragment key={index}>
-                      <div
-                        style={{
-                          // left: `calc(${progress}% - 5px)`,
-                          position: "relative",
-                          marginRight: "740px",
+                          marginLeft: index === 0 ? 0 : "184px",
                           height: "20px",
                           width: "20px",
                           borderRadius: "50%",
@@ -410,7 +240,7 @@ const App = () => {
                             left: `-100px`,
                             position: "relative",
                             display: "block",
-                            top: index % 2 === 0 ? "60px" : "-120px",
+                            top: index % 2 === 0 ? "50px" : "-110px",
                             fontWeight: "bold",
                             textAlign: "center",
                             backgroundColor: "#1c1c1c",
@@ -427,65 +257,279 @@ const App = () => {
                     </React.Fragment>
                   );
                 })}
-              </div>
-              <div
-                style={{
-                  width: "1400px",
-                  height: "20px",
-                  backgroundColor: "#ccc",
-                  position: "absolute",
-                  bottom: "-700px",
-                  left: "11944px",
-                  display: "flex",
-                  gap: "30px",
-                  borderRadius: "15px",
-                  transform: "translate(-50%, -50%) rotate(-90deg)",
-                  zIndex: -1,
-                }}
-              >
-                {est.map((station, index) => {
-                  return (
-                    <React.Fragment key={index}>
-                      <div
-                        style={{
-                          // left: `calc(${progress}% - 5px)`,
-                          position: "relative",
-                          marginRight: "180px",
-                          height: "20px",
-                          width: "20px",
-                          borderRadius: "50%",
-                          backgroundColor: "#1c1c1c",
-                        }}
-                      >
-                        <span
+                <div
+                  style={{
+                    width: "700px",
+                    height: "20px",
+                    backgroundColor: "#ccc",
+                    position: "absolute",
+                    top: "360px",
+                    left: "243px",
+                    display: "flex",
+                    gap: "30px",
+                    borderRadius: "15px",
+                    transform: "translate(-50%, -50%) rotate(90deg)",
+                    zIndex: -1,
+                  }}
+                >
+                  {startVertical.map((station, index) => {
+                    return (
+                      <React.Fragment key={index}>
+                        <div
                           style={{
-                            left: `-105px`,
-                            position: "absolute",
-                            display: "block",
-                            top: index % 2 === 0 ? "120px" : "-210px",
-                            fontSize: "42px",
-                            fontWeight: "bold",
-                            textAlign: "center",
-                            // height: "20px",
-                            minWidth: "230px",
+                            // left: `calc(${progress}% - 5px)`,
+                            position: "relative",
+                            marginLeft: "194px",
+                            height: "20px",
+                            width: "20px",
+                            borderRadius: "50%",
                             backgroundColor: "#1c1c1c",
-                            borderRadius: "15px",
-                            color: "white",
-                            transform: "rotate(90deg)",
-                            padding: "15px",
                           }}
                         >
-                          {station.name}
-                        </span>
-                      </div>
-                    </React.Fragment>
-                  );
-                })}
+                          <span
+                            style={{
+                              left: `-103px`,
+                              position: "absolute",
+                              display: "block",
+                              top: index % 2 === 0 ? "130px" : "-220px",
+                              fontSize: "42px",
+                              fontWeight: "bold",
+                              textAlign: "center",
+                              // height: "20px",
+                              minWidth: "230px",
+                              backgroundColor: "#1c1c1c",
+                              borderRadius: "15px",
+                              color: "white",
+                              transform: "rotate(-90deg)",
+                              padding: "15px",
+                            }}
+                          >
+                            {station.name}
+                          </span>
+                        </div>
+                      </React.Fragment>
+                    );
+                  })}
+                </div>
+                <div
+                  style={{
+                    width: "4800px",
+                    height: "20px",
+                    backgroundColor: "#ccc",
+                    position: "absolute",
+                    bottom: "2390px",
+                    left: "9368px",
+                    display: "flex",
+                    gap: "30px",
+                    borderRadius: "15px",
+                    transform: "translate(-50%, -50%) rotate(-90deg)",
+                    zIndex: -1,
+                  }}
+                >
+                  {west.map((station, index) => {
+                    return (
+                      <React.Fragment key={index}>
+                        <div
+                          style={{
+                            // left: `calc(${progress}% - 5px)`,
+                            position: "relative",
+                            marginLeft: "160px",
+                            height: "20px",
+                            width: "20px",
+                            borderRadius: "50%",
+                            backgroundColor: "#1c1c1c",
+                          }}
+                        >
+                          <span
+                            style={{
+                              left: `-103px`,
+                              position: "absolute",
+                              display: "block",
+                              top: index % 2 === 0 ? "130px" : "-220px",
+                              fontSize: "42px",
+                              fontWeight: "bold",
+                              textAlign: "center",
+                              // height: "20px",
+                              minWidth: "230px",
+                              backgroundColor: "#1c1c1c",
+                              borderRadius: "15px",
+                              color: "white",
+                              transform: "rotate(90deg)",
+                              padding: "15px",
+                            }}
+                          >
+                            {station.name}
+                          </span>
+                        </div>
+                      </React.Fragment>
+                    );
+                  })}
+                </div>
+                <div
+                  style={{
+                    width: "4200px",
+                    height: "20px",
+                    backgroundColor: "#ccc",
+                    position: "absolute",
+                    bottom: "1650px",
+                    left: "10655px",
+                    display: "flex",
+                    gap: "30px",
+                    borderRadius: "15px",
+                    transform: "translate(-50%, -50%) rotate(-127.8deg)",
+                    zIndex: -2,
+                  }}
+                >
+                  {angle.map((station, index) => {
+                    return (
+                      <React.Fragment key={index}>
+                        <div
+                          style={{
+                            // left: `calc(${progress}% - 5px)`,
+                            position: "relative",
+                            marginRight: "330px",
+                            marginLeft: "300px",
+                            height: "20px",
+                            width: "20px",
+                            borderRadius: "50%",
+                            backgroundColor: "#1c1c1c",
+                          }}
+                        >
+                          <span
+                            style={{
+                              left: `-220px`,
+                              top: "120px",
+                              position: "relative",
+                              display: "block",
+                              fontWeight: "bold",
+                              textAlign: "center",
+                              backgroundColor: "#1c1c1c",
+                              borderRadius: "15px",
+                              color: "white",
+                              transform: "rotate(127.3deg)",
+                              fontSize: "42px",
+                              minWidth: "230px",
+                              padding: "15px",
+                            }}
+                          >
+                            {station.name}
+                          </span>
+                        </div>
+                      </React.Fragment>
+                    );
+                  })}
+                </div>
+                <div
+                  style={{
+                    width: "3970px",
+                    height: "20px",
+                    backgroundColor: "#ccc",
+                    position: "absolute",
+                    bottom: "4780px",
+                    left: "7800px",
+                    display: "flex",
+                    gap: "30px",
+                    borderRadius: "15px",
+                    transform: "translate(-50%, -50%)",
+                    zIndex: -2,
+                  }}
+                >
+                  {horizontalWest.map((station, index) => {
+                    return (
+                      <React.Fragment key={index}>
+                        <div
+                          style={{
+                            // left: `calc(${progress}% - 5px)`,
+                            position: "relative",
+                            marginRight: "740px",
+                            height: "20px",
+                            width: "20px",
+                            borderRadius: "50%",
+                            backgroundColor: "#1c1c1c",
+                          }}
+                        >
+                          <span
+                            style={{
+                              left: `-100px`,
+                              position: "relative",
+                              display: "block",
+                              top: index % 2 === 0 ? "60px" : "-120px",
+                              fontWeight: "bold",
+                              textAlign: "center",
+                              backgroundColor: "#1c1c1c",
+                              borderRadius: "15px",
+                              color: "white",
+                              fontSize: "42px",
+                              minWidth: "230px",
+                              padding: "15px",
+                            }}
+                          >
+                            {station.name}
+                          </span>
+                        </div>
+                      </React.Fragment>
+                    );
+                  })}
+                </div>
+                <div
+                  style={{
+                    width: "1400px",
+                    height: "20px",
+                    backgroundColor: "#ccc",
+                    position: "absolute",
+                    bottom: "-700px",
+                    left: "11944px",
+                    display: "flex",
+                    gap: "30px",
+                    borderRadius: "15px",
+                    transform: "translate(-50%, -50%) rotate(-90deg)",
+                    zIndex: -1,
+                  }}
+                >
+                  {est.map((station, index) => {
+                    return (
+                      <React.Fragment key={index}>
+                        <div
+                          style={{
+                            // left: `calc(${progress}% - 5px)`,
+                            position: "relative",
+                            marginRight: "180px",
+                            height: "20px",
+                            width: "20px",
+                            borderRadius: "50%",
+                            backgroundColor: "#1c1c1c",
+                          }}
+                        >
+                          <span
+                            style={{
+                              left: `-105px`,
+                              position: "absolute",
+                              display: "block",
+                              top: index % 2 === 0 ? "120px" : "-210px",
+                              fontSize: "42px",
+                              fontWeight: "bold",
+                              textAlign: "center",
+                              // height: "20px",
+                              minWidth: "230px",
+                              backgroundColor: "#1c1c1c",
+                              borderRadius: "15px",
+                              color: "white",
+                              transform: "rotate(90deg)",
+                              padding: "15px",
+                            }}
+                          >
+                            {station.name}
+                          </span>
+                        </div>
+                      </React.Fragment>
+                    );
+                  })}
+                </div>
               </div>
             </div>
-          </div>
-        </TransformComponent>
-      </TransformWrapper>
+          </TransformComponent>
+        </TransformWrapper>
+      </div>
     </div>
   );
 };
