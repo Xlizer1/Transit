@@ -2,14 +2,39 @@ import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import "./App.css";
 import React, { useEffect } from "react";
 import irr from "./assets/irr.gif";
+import { Station } from "./components/Station";
 
 const App = () => {
-  // const trains = [
-  //   {
-  //     id: 1,
-  //     station_id: 1,
-  //   },
-  // ];
+  const trains = [
+    {
+      id: 1,
+      station_id: 1,
+    },
+    {
+      id: 2,
+      station_id: 1,
+    },
+    {
+      id: 3,
+      station_id: 1,
+    },
+    {
+      id: 4,
+      station_id: 1,
+    },
+    {
+      id: 4,
+      station_id: 1,
+    },
+    {
+      id: 4,
+      station_id: 1,
+    },
+    {
+      id: 4,
+      station_id: 1,
+    },
+  ];
 
   const startVertical = [
     { id: 1, name: "الزبير" },
@@ -59,31 +84,30 @@ const App = () => {
     { id: 39, name: "المحطة المركزية" },
     { id: 40, name: "ساحة الرصف" },
     { id: 41, name: "الكاظمية" },
-
-    { id: 41, name: "التاجي" },
-    { id: 41, name: "المشاهدة" },
-    { id: 41, name: "الدجيل" },
-    { id: 41, name: "بلد" },
-    { id: 41, name: "الاسحاقي" },
-    { id: 41, name: "سامراء" },
-    { id: 41, name: "العباسي" },
-    { id: 41, name: "امام دور" },
-    { id: 41, name: "تكريت" },
-    { id: 41, name: "الرياش" },
-    { id: 41, name: "بيجي" },
-    { id: 41, name: "حليوان" },
-    { id: 41, name: "عين الدبس" },
-    { id: 41, name: "تلول البق" },
-    { id: 41, name: "الجوناف" },
-    { id: 41, name: "وادي المر" },
-    { id: 41, name: "القيارة" },
-    { id: 41, name: "الشورة" },
-    { id: 41, name: "حمام العليل" },
-    { id: 41, name: "الموصل" },
-    { id: 41, name: "صابونية" },
-    { id: 41, name: "وائلية" },
-    { id: 41, name: "عوينات" },
-    { id: 41, name: "ربيعة" },
+    { id: 42, name: "التاجي" },
+    { id: 43, name: "المشاهدة" },
+    { id: 44, name: "الدجيل" },
+    { id: 45, name: "بلد" },
+    { id: 46, name: "الاسحاقي" },
+    { id: 47, name: "سامراء" },
+    { id: 48, name: "العباسي" },
+    { id: 49, name: "امام دور" },
+    { id: 50, name: "تكريت" },
+    { id: 51, name: "الرياش" },
+    { id: 52, name: "بيجي" },
+    { id: 53, name: "حليوان" },
+    { id: 54, name: "عين الدبس" },
+    { id: 56, name: "تلول البق" },
+    { id: 57, name: "الجوناف" },
+    { id: 58, name: "وادي المر" },
+    { id: 59, name: "القيارة" },
+    { id: 60, name: "الشورة" },
+    { id: 61, name: "حمام العليل" },
+    { id: 62, name: "الموصل" },
+    { id: 63, name: "صابونية" },
+    { id: 64, name: "وائلية" },
+    { id: 65, name: "عوينات" },
+    { id: 66, name: "ربيعة" },
   ];
 
   const angle = [
@@ -147,32 +171,58 @@ const App = () => {
 
   const divWidth = 15300;
   const divHeight = 6500;
-  const initialPositionX = -7650;
-  const initialPositionY = -3150;
+  const initialPositionX = -7250;
+  const initialPositionY = -2850;
 
   return (
     <div className="App">
       <div
         style={{
           width: "100vw",
-          height: "100px",
-          borderBottom: "2px solid #616161",
-          display: "flex",
-          alignItems: "center",
+          height: "70px",
           paddingRight: "20px",
           paddingLeft: "20px",
+          position: "relative",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 20}}>
-          <img src={irr} alt="#" width="70px" height="70px" />
-          <h1>IRR</h1>
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            borderBottom: "2px solid #b5b5b5",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 20,
+              zIndex: 100,
+            }}
+          >
+            <img src={irr} alt="#" width="50px" height="50px" />
+            <h1>Iraqi Republic Railways</h1>
+          </div>
         </div>
+        <div
+          style={{
+            position: "absolute",
+            width: "240px",
+            height: "700px",
+            border: "1px solid #b5b5b5",
+            borderRadius: "10px",
+            right: 20,
+            top: 90,
+          }}
+        ></div>
       </div>
       <div
         className="zoom"
         style={{
           width: "100vw",
-          height: "84.4vh",
+          height: "100vh",
           // backgroundColor: "#d3d3d3",
           overflow: "hidden",
         }}
@@ -181,8 +231,6 @@ const App = () => {
           initialScale={1}
           initialPositionX={initialPositionX}
           initialPositionY={initialPositionY}
-          minPositionX={0}
-          minPositionY={0}
           limitToBounds={false}
         >
           {({ zoomIn, zoomOut, ...rest }) => (
@@ -192,7 +240,7 @@ const App = () => {
                 height: "100px",
                 backgroundColor: "red",
                 position: "absolute",
-                zIndex: 10,
+                zIndex: 100,
                 bottom: 0,
                 right: 0,
               }}
@@ -279,40 +327,14 @@ const App = () => {
                 >
                   {startVertical.map((station, index) => {
                     return (
-                      <React.Fragment key={index}>
-                        <div
-                          style={{
-                            // left: `calc(${progress}% - 5px)`,
-                            position: "relative",
-                            marginLeft: "194px",
-                            height: "20px",
-                            width: "20px",
-                            borderRadius: "50%",
-                            backgroundColor: "#1c1c1c",
-                          }}
-                        >
-                          <span
-                            style={{
-                              left: `-103px`,
-                              position: "absolute",
-                              display: "block",
-                              top: index % 2 === 0 ? "130px" : "-220px",
-                              fontSize: "42px",
-                              fontWeight: "bold",
-                              textAlign: "center",
-                              // height: "20px",
-                              minWidth: "230px",
-                              backgroundColor: "#1c1c1c",
-                              borderRadius: "15px",
-                              color: "white",
-                              transform: "rotate(-90deg)",
-                              padding: "15px",
-                            }}
-                          >
-                            {station.name}
-                          </span>
-                        </div>
-                      </React.Fragment>
+                      <Station
+                        key={index}
+                        station={station}
+                        marginLeft="194px"
+                        left="-103px"
+                        top={index % 2 === 0 ? "130px" : "-220px"}
+                        transform="rotate(-90deg)"
+                      />
                     );
                   })}
                 </div>
@@ -333,40 +355,14 @@ const App = () => {
                 >
                   {west.map((station, index) => {
                     return (
-                      <React.Fragment key={index}>
-                        <div
-                          style={{
-                            // left: `calc(${progress}% - 5px)`,
-                            position: "relative",
-                            marginLeft: "160px",
-                            height: "20px",
-                            width: "20px",
-                            borderRadius: "50%",
-                            backgroundColor: "#1c1c1c",
-                          }}
-                        >
-                          <span
-                            style={{
-                              left: `-103px`,
-                              position: "absolute",
-                              display: "block",
-                              top: index % 2 === 0 ? "130px" : "-220px",
-                              fontSize: "42px",
-                              fontWeight: "bold",
-                              textAlign: "center",
-                              // height: "20px",
-                              minWidth: "230px",
-                              backgroundColor: "#1c1c1c",
-                              borderRadius: "15px",
-                              color: "white",
-                              transform: "rotate(90deg)",
-                              padding: "15px",
-                            }}
-                          >
-                            {station.name}
-                          </span>
-                        </div>
-                      </React.Fragment>
+                      <Station
+                        key={index}
+                        station={station}
+                        marginLeft="160px"
+                        left="-103px"
+                        top={index % 2 === 0 ? "130px" : "-220px"}
+                        transform="rotate(90deg)"
+                      />
                     );
                   })}
                 </div>
@@ -387,40 +383,15 @@ const App = () => {
                 >
                   {angle.map((station, index) => {
                     return (
-                      <React.Fragment key={index}>
-                        <div
-                          style={{
-                            // left: `calc(${progress}% - 5px)`,
-                            position: "relative",
-                            marginRight: "330px",
-                            marginLeft: "300px",
-                            height: "20px",
-                            width: "20px",
-                            borderRadius: "50%",
-                            backgroundColor: "#1c1c1c",
-                          }}
-                        >
-                          <span
-                            style={{
-                              left: `-220px`,
-                              top: "120px",
-                              position: "relative",
-                              display: "block",
-                              fontWeight: "bold",
-                              textAlign: "center",
-                              backgroundColor: "#1c1c1c",
-                              borderRadius: "15px",
-                              color: "white",
-                              transform: "rotate(127.3deg)",
-                              fontSize: "42px",
-                              minWidth: "230px",
-                              padding: "15px",
-                            }}
-                          >
-                            {station.name}
-                          </span>
-                        </div>
-                      </React.Fragment>
+                      <Station
+                        key={index}
+                        station={station}
+                        marginRight="330px"
+                        marginLeft="300px"
+                        left="-220px"
+                        top="120px"
+                        transform="rotate(127.3deg)"
+                      />
                     );
                   })}
                 </div>
@@ -441,38 +412,13 @@ const App = () => {
                 >
                   {horizontalWest.map((station, index) => {
                     return (
-                      <React.Fragment key={index}>
-                        <div
-                          style={{
-                            // left: `calc(${progress}% - 5px)`,
-                            position: "relative",
-                            marginRight: "740px",
-                            height: "20px",
-                            width: "20px",
-                            borderRadius: "50%",
-                            backgroundColor: "#1c1c1c",
-                          }}
-                        >
-                          <span
-                            style={{
-                              left: `-100px`,
-                              position: "relative",
-                              display: "block",
-                              top: index % 2 === 0 ? "60px" : "-120px",
-                              fontWeight: "bold",
-                              textAlign: "center",
-                              backgroundColor: "#1c1c1c",
-                              borderRadius: "15px",
-                              color: "white",
-                              fontSize: "42px",
-                              minWidth: "230px",
-                              padding: "15px",
-                            }}
-                          >
-                            {station.name}
-                          </span>
-                        </div>
-                      </React.Fragment>
+                      <Station
+                        key={index}
+                        station={station}
+                        marginRight="740px"
+                        left="-100px"
+                        top={index % 2 === 0 ? "60px" : "-120px"}
+                      />
                     );
                   })}
                 </div>
@@ -493,40 +439,14 @@ const App = () => {
                 >
                   {est.map((station, index) => {
                     return (
-                      <React.Fragment key={index}>
-                        <div
-                          style={{
-                            // left: `calc(${progress}% - 5px)`,
-                            position: "relative",
-                            marginRight: "180px",
-                            height: "20px",
-                            width: "20px",
-                            borderRadius: "50%",
-                            backgroundColor: "#1c1c1c",
-                          }}
-                        >
-                          <span
-                            style={{
-                              left: `-105px`,
-                              position: "absolute",
-                              display: "block",
-                              top: index % 2 === 0 ? "120px" : "-210px",
-                              fontSize: "42px",
-                              fontWeight: "bold",
-                              textAlign: "center",
-                              // height: "20px",
-                              minWidth: "230px",
-                              backgroundColor: "#1c1c1c",
-                              borderRadius: "15px",
-                              color: "white",
-                              transform: "rotate(90deg)",
-                              padding: "15px",
-                            }}
-                          >
-                            {station.name}
-                          </span>
-                        </div>
-                      </React.Fragment>
+                      <Station
+                        key={index}
+                        station={station}
+                        marginRight="180px"
+                        left="-105px"
+                        top={index % 2 === 0 ? "120px" : "-210px"}
+                        transform="rotate(90deg)"
+                      />
                     );
                   })}
                 </div>
