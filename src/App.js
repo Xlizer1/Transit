@@ -162,7 +162,12 @@ const App = () => {
           paddingRight: "20px",
           paddingLeft: "20px",
         }}
-      ><img src={irr} alt="#" width="70px" height="70px" /></div>
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 20}}>
+          <img src={irr} alt="#" width="70px" height="70px" />
+          <h1>IRR</h1>
+        </div>
+      </div>
       <div
         className="zoom"
         style={{
