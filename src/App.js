@@ -10,7 +10,7 @@ import Station from "./components/Station";
 import ZoomInIcon from "@mui/icons-material/ZoomIn";
 import ZoomOutIcon from "@mui/icons-material/ZoomOut";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
-import { Autocomplete, TextField } from "@mui/material";
+import { Autocomplete, TextField, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
 const App = () => {
@@ -30,9 +30,8 @@ const App = () => {
           padding: "5px",
         }}
       >
-        <button
+        {/* <button
           onClick={() => {
-            // setTransform(1, -7250, -2850, 200);
             zoomIn();
           }}
           style={{ backgroundColor: "transparent", border: "none" }}
@@ -44,12 +43,15 @@ const App = () => {
           style={{ backgroundColor: "transparent", border: "none" }}
         >
           <ZoomOutIcon />
-        </button>
+        </button> */}
         <button
           onClick={() => resetTransform()}
           style={{ backgroundColor: "transparent", border: "none" }}
         >
           <RestartAltIcon />
+          <Typography sx={{ width: "120px" }}>
+            Reset To Initial Position
+          </Typography>
         </button>
       </div>
     );
