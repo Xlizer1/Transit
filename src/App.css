@@ -10,3 +10,16 @@
     position: relative;
     overflow: hidden;
 }
+.react-transform-component {
+    width: unset !important;
+    height: unset !important;
+}
+.react-transform-element {
+    width: unset !important;
+    height: unset !important;
+}
+img {
+    max-width:  100%;
+    max-height: 100%;
+    display: block;
+}
