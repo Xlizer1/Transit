@@ -15,7 +15,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 const App = () => {
   const Controls = () => {
-    const { zoomIn, zoomOut, resetTransform, setPosition } = useControls();
+    const { zoomIn, zoomOut, resetTransform, setTransform } = useControls();
     return (
       <div
         style={{
@@ -32,7 +32,7 @@ const App = () => {
       >
         <button
           onClick={() => {
-            setPosition(-7250, -2850, 20000);
+            // setTransform(1, -7250, -2850, 200);
             zoomIn();
           }}
           style={{ backgroundColor: "transparent", border: "none" }}
