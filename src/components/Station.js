@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import "@fontsource/cairo/400.css";
+import "../App.css";
 
 function Station({
   index,
@@ -48,6 +50,8 @@ function Station({
             fontSize: "42px",
             fontWeight: "bold",
             textAlign: "center",
+            fontFamily: "cairo",
+            lineHeight: "50px",
             minWidth: "230px",
             backgroundColor: "#1c1c1c",
             borderRadius: "15px",
@@ -60,7 +64,8 @@ function Station({
           <div
             style={{
               position: "absolute",
-              bottom: index % 2 === 1 ? -60 : 87,
+              bottom: index % 2 === 1 ? -60 : "unset",
+              top: index % 2 === 0 ? -60 : "unset",
               left: 0,
               display: "flex",
               flexWrap: "wrap-reverse",
@@ -68,25 +73,32 @@ function Station({
               width: "230px",
             }}
           >
-            {stationTrains?.slice(0, 3)?.map((train, index) => (
-              <React.Fragment key={index}>
-                <div
-                  style={{
-                    width: "53px",
-                    height: "53px",
-                    backgroundColor: trainTypes?.find((type) => {
-                      if (type?.id === train?.type) return type;
-                    }).color,
-                    borderRadius: "50%",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <span style={{ fontSize: "26px" }}>{train?.id}</span>
-                </div>
-              </React.Fragment>
-            ))}
+            {stationTrains?.slice(0, 3)?.map((train, index) => {
+              const trainType = trainTypes?.find(
+                (type) => type?.id === train?.type
+              );
+              return (
+                <React.Fragment key={index}>
+                  <div
+                    style={{
+                      width: "53px",
+                      height: "53px",
+                      backgroundColor: trainType.color,
+                      borderRadius: "50%",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      animation:
+                        trainType.color === "#0f0"
+                          ? "glow 0.7s infinite"
+                          : "none",
+                    }}
+                  >
+                    <span style={{ fontSize: "26px" }}>{train?.id}</span>
+                  </div>
+                </React.Fragment>
+              );
+            })}
             {stationTrains?.length && stationTrains?.length > 3 ? (
               <div>
                 <button
@@ -99,7 +111,7 @@ function Station({
                     justifyContent: "center",
                     border: "none",
                     cursor: "pointer",
-                    position: "relative",
+                    // position: "relative",
                   }}
                 >
                   <span
@@ -122,57 +134,66 @@ function Station({
                   open={Boolean(anchorEl)}
                   onClose={handleClose}
                 >
-                  {stationTrains?.map((train, index) => (
-                    <MenuItem onClick={handleClose} key={index}>
-                      <div
-                        style={{
-                          borderBottom:
-                            stationTrains?.length - 1 !== index
-                              ? "1px solid #ababab"
-                              : "none",
-                        }}
-                      >
-                        <div>
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 5,
-                            }}
-                          >
-                            Train ID.
-                            <span
+                  {stationTrains?.map((train, index) => {
+                    const trainType = trainTypes?.find(
+                      (type) => type?.id === train?.type
+                    );
+                    return (
+                      <MenuItem onClick={handleClose} key={index}>
+                        <div
+                          style={{
+                            // borderBottom:
+                            //   stationTrains?.length - 1 !== index
+                            //     ? "1px solid #ababab"
+                            //     : "none",
+                            borderLeft: `10px solid ${trainType?.color}`,
+                            paddingLeft: "10px",
+                            paddingBottom: "5px",
+                            width: "100%",
+                          }}
+                        >
+                          <div>
+                            <div
                               style={{
-                                fontSize: "22px",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 5,
                               }}
                             >
-                              {train?.id}
-                            </span>
-                          </div>
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 5,
-                            }}
-                          >
-                            Train Status:
-                            <span
+                              Train ID.
+                              <span
+                                style={{
+                                  fontSize: "22px",
+                                }}
+                              >
+                                {train?.id}
+                              </span>
+                            </div>
+                            <div
                               style={{
-                                fontSize: "22px",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 5,
                               }}
                             >
-                              {
-                                trainTypes?.find((type) => {
-                                  if (type?.id === train?.type) return type;
-                                }).name
-                              }
-                            </span>
+                              Train Status:
+                              <span
+                                style={{
+                                  fontSize: "22px",
+                                }}
+                              >
+                                {
+                                  trainTypes?.find((type) => {
+                                    if (type?.id === train?.type) return type;
+                                  }).name
+                                }
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </MenuItem>
-                  ))}
+                      </MenuItem>
+                    );
+                  })}
                 </Menu>
               </div>
             ) : null}
