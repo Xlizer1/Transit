@@ -109,22 +109,21 @@ function Station({
                     borderRadius: "50%",
                     display: "flex",
                     justifyContent: "center",
+                    alignItems: "center",
                     border: "none",
                     cursor: "pointer",
-                    // position: "relative",
                   }}
                 >
                   <span
                     onClick={handleClick}
                     style={{
-                      fontSize: "60px",
+                      fontSize: "23px",
+                      fontWeight: "bold",
                       color: "#fff",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(0%, -35%)",
+                      marginTop: "3px"
                     }}
                   >
-                    ...
+                    + {stationTrains?.length - 3}
                   </span>
                 </button>
                 <Menu
