@@ -12,11 +12,54 @@ import { Autocomplete, TextField, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 // import NavigationIcon from "@mui/icons-material/Navigation";
 import stationsData from "./assets/StationsData.json";
+import { useLocation } from "react-router-dom";
 
 const App = () => {
+  const location = useLocation();
   const transformComponentRef = useRef(null);
   const [selectedType, setSelectedType] = useState(null);
   // const [selectedStation, setSelectedStation] = useState(null);
+  const [queryParams, setQueryParams] = useState({});
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const queryParamsObject = {
+      sid: params.get('sid'),
+      user: params.get('user'),
+      baseUrl: params.get('baseUrl'),
+      hostUrl: params.get('hostUrl'),
+      b: params.get('b'),
+      v: params.get('v'),
+    };
+    setQueryParams(queryParamsObject);
+  }, [location]);
+
+  useEffect(() => {
+    const renewSession = async () => {
+      if (queryParams.baseUrl && queryParams.sid) {
+        try {
+          const response = await fetch(`${queryParams.hostUrl}/wialon/ajax.html?svc=core/duplicate&params={"operateAs":""}&sid=${queryParams.sid}`);
+          const data = await response.json();
+          if (data && data.sid) {
+            setQueryParams((prevParams) => ({
+              ...prevParams,
+              sid: data.sid,
+            }));
+            console.log("Session ID renewed:", data.sid);
+          } else {
+            console.error("Failed to renew session ID", data);
+          }
+        } catch (error) {
+          console.error("Error renewing session ID:", error);
+        }
+      }
+    };
+
+    const intervalId = setInterval(renewSession, 60000); // 60000 ms = 1 minute
+    renewSession(); // Call it immediately to renew session on mount
+
+    return () => clearInterval(intervalId); // Cleanup interval on component unmount
+  }, [queryParams.baseUrl, queryParams.sid]);
 
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
