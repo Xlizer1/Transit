@@ -4,67 +4,330 @@ import {
   useControls,
 } from "react-zoom-pan-pinch";
 import "./App.css";
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import irr from "./assets/irr.gif";
 import Station from "./components/Station";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import { Autocomplete, TextField, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-// import NavigationIcon from "@mui/icons-material/Navigation";
-import stationsData from "./assets/StationsData.json";
 import { useLocation } from "react-router-dom";
+import $ from "jquery";
+import Cookies from "universal-cookie";
+
+const cookies = new Cookies();
 
 const App = () => {
-  const location = useLocation();
   const transformComponentRef = useRef(null);
   const [selectedType, setSelectedType] = useState(null);
-  // const [selectedStation, setSelectedStation] = useState(null);
+  const [stationsData, setStationsData] = useState({
+    startVertical: [
+      { id: 617, name: "الزبير" },
+      { id: 659, name: "المربد" },
+      { id: 618, name: "ام قصر" },
+    ],
+    southToNorth: [
+      { id: 580, name: "المعقل" },
+      { id: 615, name: "الشعبية" },
+      { id: 614, name: "الطوبة" },
+      { id: 613, name: "الرملية" },
+      { id: 612, name: "ارطاوي" },
+      { id: 611, name: "الغبيشة" },
+      { id: 610, name: "لقيط" },
+      { id: 609, name: "الشويعرية" },
+      { id: 607, name: "الكرماشية" },
+      { id: 606, name: "سوق الشيوخ" },
+      { id: 605, name: "الخندق" },
+      { id: 604, name: "الناصرية" },
+      { id: 603, name: "القوزية" },
+      { id: 602, name: "البطحاء" },
+      { id: 601, name: "الدراجي" },
+      { id: 600, name: "الخضر" },
+      { id: 599, name: "الخافورة" },
+      { id: 598, name: "السماوة" },
+      { id: 597, name: "ساوة" },
+      { id: 41, name: "الحجامة" },
+      { id: 5, name: "الرمثية" },
+      { id: 594, name: "ابو طبيخ" },
+      { id: 593, name: "الحمزة" },
+      { id: 592, name: "نبي مدين" },
+      { id: 591, name: "الديوانية" },
+      { id: 590, name: "السينية" },
+      { id: 589, name: "الشريفية" },
+      { id: 588, name: "قوجان" },
+      { id: 587, name: "الهاشمية" },
+      { id: 29, name: "حديد" },
+      { id: 585, name: "الحلة" },
+      { id: 584, name: "المحاويل" },
+      { id: 581, name: "المسيب" },
+      { id: 679, name: "الاسكندرية" },
+      { id: 579, name: "المحمودية" },
+      { id: 578, name: "اليوسفية" },
+      { id: 577, name: "الدورة" },
+      { id: 575, name: "المنصور" },
+      { id: 572, name: "المحطة المركزية" },
+      { id: 1, name: "ساحة الرصف" },
+      { id: 663, name: "الكاظمية" },
+      { id: 689, name: "التاجي" },
+      { id: 691, name: "المشاهدة" },
+      { id: 694, name: "الدجيل" },
+      { id: 696, name: "بلد" },
+      { id: 699, name: "الاسحاقي" },
+      { id: 698, name: "سامراء" },
+      { id: 702, name: "العباسية" },
+      { id: 705, name: "امام دور" },
+      { id: 707, name: "تكريت" },
+      { id: 709, name: "قلعة رياش" },
+      { id: 711, name: "بيجي" },
+      { id: 713, name: "حليوات" },
+      { id: 715, name: "عين الدبس" },
+      { id: 717, name: "تلول البق" },
+      { id: 719, name: "الجرناف" },
+      { id: 721, name: "وادي المر" },
+      { id: 723, name: "القيارة" },
+      { id: 725, name: "الشورة" },
+      { id: 727, name: "حمام العليل" },
+      { id: 729, name: "الموصل" },
+      { id: 732, name: "الصابونية" },
+      { id: 734, name: "الوائلية" },
+      { id: 737, name: "تل عوينات" },
+      { id: 739, name: "ربيعة" },
+    ],
+    west: [
+      { id: 664, name: "ابو غريب" },
+      { id: 666, name: "شيخ ضاري" },
+      { id: 668, name: "الكرمة" },
+      { id: 662, name: "الفلوجة" },
+      { id: 742, name: "الحبانية" },
+      { id: 744, name: "الخالدية" },
+      { id: 746, name: "رمادي شرق" },
+      { id: 748, name: "رمادي غرب" },
+      { id: 750, name: "الرطبة" },
+      { id: 752, name: "المحمدي" },
+      { id: 754, name: "هيث" },
+      { id: 758, name: "المرج" },
+      { id: 760, name: "البيادر" },
+      { id: 762, name: "البغدادي" },
+      { id: 764, name: "حوران" },
+      { id: 84, name: "المقلانية" },
+      { id: 769, name: "حديثه" },
+      { id: 771, name: "الفحيمي" },
+      { id: 773, name: "عنه" },
+      { id: 779, name: "جباب" },
+      { id: 775, name: "ميثاق" },
+      { id: 782, name: "القائم" },
+      { id: 586, name: "حصيبة" },
+    ],
+    horizontalWest: [
+      { id: 801, name: "عكاشات" },
+      { id: 798, name: "الرتقة" },
+      { id: 795, name: "الواحة" },
+      { id: 793, name: "العنقاء" },
+      { id: 790, name: "المجمع" },
+      { id: 97, name: "الاسمدة" },
+    ],
+    angle: [
+      { id: 816, name: "الصينية" },
+      { id: 814, name: "الثرثار" },
+      { id: 812, name: "الصفاء" },
+      { id: 810, name: "الوادي" },
+      { id: 808, name: "الهضاب" },
+      { id: 806, name: "العطاء" },
+    ],
+    est: [
+      { id: 818, name: "الفتحة" },
+      { id: 820, name: "المراعي" },
+      { id: 822, name: "الرياض" },
+      { id: 824, name: "الثورة" },
+      { id: 828, name: "كركوك البضائع" },
+      { id: 830, name: "كركوك المسافرين" },
+    ],
+    trains: [],
+  });
+
   const [queryParams, setQueryParams] = useState({});
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const updatedSidRef = useRef(params.get("sid"));
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
     const queryParamsObject = {
-      sid: params.get('sid'),
-      user: params.get('user'),
-      baseUrl: params.get('baseUrl'),
-      hostUrl: params.get('hostUrl'),
-      b: params.get('b'),
-      v: params.get('v'),
+      sid: params.get("sid"),
+      user: params.get("user"),
+      baseUrl: params.get("baseUrl"),
+      hostUrl: params.get("hostUrl"),
+      b: params.get("b"),
+      v: params.get("v"),
     };
     setQueryParams(queryParamsObject);
   }, [location]);
 
   useEffect(() => {
-    const renewSession = async () => {
-      if (queryParams.baseUrl && queryParams.sid) {
-        try {
-          const response = await fetch(`${queryParams.hostUrl}/wialon/ajax.html?svc=core/duplicate&params={"operateAs":""}&sid=${queryParams.sid}`);
-          const data = await response.json();
-          if (data && data.sid) {
-            setQueryParams((prevParams) => ({
-              ...prevParams,
-              sid: data.sid,
-            }));
-            console.log("Session ID renewed:", data.sid);
+    if (updatedSidRef.current) {
+      cookies.set("sid", updatedSidRef.current);
+    }
+  }, [updatedSidRef.current]);
+
+  const renewSession = useCallback(() => {
+    if (queryParams.baseUrl && updatedSidRef.current?.length) {
+      const sid = cookies.get("sid");
+      const targetUrl = `${
+        queryParams.baseUrl
+      }/wialon/ajax.html?svc=core/duplicate&params={"operateAs":""}&sid=${
+        sid ? sid : updatedSidRef.current
+      }`;
+      $.ajax({
+        type: "GET",
+        url: targetUrl,
+        dataType: "jsonp",
+        success: function (response) {
+          if (response && response.eid) {
+            updatedSidRef.current = response.eid;
+            cookies.set("uid", response.eid);
+            console.log("Session ID renewed:", response.eid);
           } else {
-            console.error("Failed to renew session ID", data);
+            console.error("Failed to renew session ID", response);
           }
-        } catch (error) {
+        },
+        error: function (error) {
           console.error("Error renewing session ID:", error);
+        },
+      });
+    }
+  }, [queryParams.baseUrl]);
+
+  const fetchTrainsLocations = useCallback(async () => {
+    if (updatedSidRef.current?.length && queryParams.baseUrl) {
+      let trains = [];
+      const uid = cookies.get("uid");
+      const sid = updatedSidRef.current || uid;
+
+      const url = `${queryParams.baseUrl}/wialon/ajax.html?svc=core/search_items&params={"spec":{"itemsType":"avl_unit","propName":"sys_name","propValueMask":"*","sortType":"sys_last_message"},"force":1,"flags":1025,"from":0,"to":0}&sid=${sid}`;
+
+      try {
+        const response = await $.ajax({
+          type: "GET",
+          url: url,
+          dataType: "jsonp",
+        });
+
+        if (response && response.items && response.items.length) {
+          const units = response.items;
+          for (let unit of units) {
+            const obj = {
+              id: unit.id,
+              name: unit.nm,
+              lon: unit.pos?.x,
+              lat: unit.pos?.y,
+            };
+            trains.push(obj);
+          }
+
+          const paramsArray = [];
+          const mainURL = `https://hst-api.wialon.com/wialon/ajax.html?svc=resource/get_zones_by_point&params={"spec":{"zoneId":{"18636489":[1,2,5,7,11,12,18,29,35,41,572,575,577,578,579,580,581,582,583,584,585,586,587,588,589,590,591,592,593,594,596,597,598,599,600,601,602,603,604,605,606,607,609,610,611,612,613,614,615,617,618,620,659,662,663,664,666,668,673,675,679,680,681,687,689,691,694,696,698,699,702,705,707,709,711,713,715,717,719,721,723,725,727,729,732,734,737,739,742,744,746,748,750,752,754,758,760,762,764,769,771,773,775,779,782,790,793,795,798,801,806,808,810,812,814,816,818,820,822,824,828,830,1492]}`;
+
+          for (let train of trains) {
+            if (train.lat && train.lon && updatedSidRef.current) {
+              const param = {
+                ...train,
+                location: `"lat":${train.lat},"lon":${train.lon}}}&sid=${updatedSidRef.current}`,
+              };
+              paramsArray.push(param);
+            }
+          }
+
+          for (let param of paramsArray) {
+            await $.ajax({
+              type: "GET",
+              url: mainURL + "," + param.location,
+              dataType: "jsonp",
+              success: function (response) {
+                if (response) {
+                  if (
+                    param.id &&
+                    trains.length &&
+                    response["18636489"] &&
+                    response["18636489"].length
+                  ) {
+                    const train = trains.find((tr) => tr.id === param.id);
+                    const newTrainObj = {
+                      ...train,
+                      station_id: response["18636489"][0],
+                    };
+                    trains = trains.filter((tr) => tr.id !== newTrainObj.id);
+                    trains.push(newTrainObj);
+                  }
+                } else {
+                  console.error("Failed to renew session ID", response);
+                }
+              },
+              error: function (error) {
+                console.error("Error fetching trains locations:", error);
+              },
+            });
+          }
+          if (trains.length && trains?.some((t) => t?.station_id)) {
+            setStationsData((prevState) => ({
+              ...prevState,
+              trains: trains,
+              type: 1,
+            }));
+          }
+        } else {
+          console.error("No units to be found:", response);
         }
+      } catch (error) {
+        console.log("Network error:", error);
       }
+    } else {
+      console.log("No sid", updatedSidRef.current);
+    }
+  }, [queryParams.baseUrl]);
+
+  useEffect(() => {
+    const renewSessionIntervalId = setInterval(renewSession, 60000);
+    renewSession();
+
+    const fetchTrainsLocationsIntervalId = setInterval(
+      fetchTrainsLocations,
+      5000
+    );
+    fetchTrainsLocations();
+
+    return () => {
+      clearInterval(renewSessionIntervalId);
+      clearInterval(fetchTrainsLocationsIntervalId);
     };
+  }, [renewSession, fetchTrainsLocations]);
 
-    const intervalId = setInterval(renewSession, 60000); // 60000 ms = 1 minute
-    renewSession(); // Call it immediately to renew session on mount
-
-    return () => clearInterval(intervalId); // Cleanup interval on component unmount
-  }, [queryParams.baseUrl, queryParams.sid]);
+  useEffect(() => {
+    fetchTrainsLocations();
+  }, []);
 
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
   });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const Controls = () => {
     const { resetTransform } = useControls();
@@ -83,20 +346,6 @@ const App = () => {
           borderRadius: "5px",
         }}
       >
-        {/* <button
-          onClick={() => {
-            zoomIn();
-          }}
-          style={{ backgroundColor: "transparent", border: "none" }}
-        >
-          <ZoomInIcon />
-        </button>
-        <button
-          onClick={() => zoomOut()}
-          style={{ backgroundColor: "transparent", border: "none" }}
-        >
-          <ZoomOutIcon />
-        </button> */}
         <button
           onClick={() => resetTransform()}
           style={{
@@ -114,23 +363,14 @@ const App = () => {
     );
   };
 
-  const trainTypes = [
-    {
-      id: 1,
-      name: "Inactive train",
-      color: "#f00",
-    },
-    {
-      id: 2,
-      name: "In the process of launching",
-      color: "#ff0",
-    },
-    {
-      id: 3,
-      name: "Active train",
-      color: "#0f0",
-    },
-  ];
+  const trainTypes = useMemo(
+    () => [
+      { id: 1, name: "Inactive train", color: "#f00" },
+      { id: 2, name: "In the process of launching", color: "#ff0" },
+      { id: 3, name: "Active train", color: "#0f0" },
+    ],
+    []
+  );
 
   const [filteredTrains, setFilteredTrains] = useState([]);
 
@@ -145,21 +385,6 @@ const App = () => {
       }
     });
   }, [selectedType]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
 
   return (
     <div className="App">
@@ -238,56 +463,6 @@ const App = () => {
               bgcolor: "#fff",
             }}
           />
-          {/* <Autocomplete
-            value={selectedStation ? selectedStation : null}
-            options={stations}
-            getOptionLabel={(option) =>
-              typeof option === "object" && option.name ? option.name : ""
-            }
-            isOptionEqualToValue={(option, value) => option.id === value.id}
-            onChange={(e, newValue) => setSelectedStation(newValue)}
-            clearIcon={
-              <CloseIcon
-                sx={{ fontSize: "20px", color: "#d3d3d3" }}
-                onClick={() => setSelectedType(null)}
-              />
-            }
-            renderInput={(params) => (
-              <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-                <TextField
-                  {...params}
-                  label="Select Station"
-                  variant="filled"
-                  sx={{
-                    bgcolor: "#fff",
-                    fontFamily: "cairo",
-                  }}
-                />
-                <Box
-                  sx={{
-                    // bgcolor: "grey",
-                    width: "30px",
-                    height: "30px",
-                    marginLeft: "-10px",
-                    marginRight: "10px",
-                    boxShadow:
-                      "0 0 0px #000, 0 0 0px #000, 0 0 0px #000, 0 0 0px #000",
-                  }}
-                >
-                  <NavigationIcon
-                    sx={{
-                      fontSize: "30px",
-                      color: "#2770cf",
-                      cursor: "pointer",
-                    }}
-                  />
-                </Box>
-              </div>
-            )}
-            style={{
-              bgcolor: "#fff",
-            }}
-          /> */}
         </div>
       </div>
       <div

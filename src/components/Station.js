@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import "@fontsource/cairo/400.css";
@@ -16,9 +16,7 @@ function Station({
   trainTypes,
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
-  const stationTrains = trains?.filter(
-    (train) => train?.station_id === station?.id
-  );
+  const [stationTrains, setStationTrains] = useState([]);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -27,6 +25,11 @@ function Station({
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  useEffect(() => {
+    const s = trains.find((tr) => tr?.station_id === station?.id);
+    console.log("susu", s ? { station, s } : null);
+  }, []);
 
   return (
     <React.Fragment key={index}>
@@ -83,13 +86,13 @@ function Station({
                     style={{
                       width: "53px",
                       height: "53px",
-                      backgroundColor: trainType.color,
+                      backgroundColor: trainType?.color,
                       borderRadius: "50%",
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
                       animation:
-                        trainType.color === "#0f0"
+                        trainType?.color === "#0f0"
                           ? "glow 0.7s infinite"
                           : "none",
                     }}
@@ -120,7 +123,7 @@ function Station({
                       fontSize: "23px",
                       fontWeight: "bold",
                       color: "#fff",
-                      marginTop: "3px"
+                      marginTop: "3px",
                     }}
                   >
                     + {stationTrains?.length - 3}
@@ -184,7 +187,7 @@ function Station({
                                 {
                                   trainTypes?.find((type) => {
                                     if (type?.id === train?.type) return type;
-                                  }).name
+                                  })?.name
                                 }
                               </span>
                             </div>
