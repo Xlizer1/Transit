@@ -4,6 +4,9 @@ import {
   useControls,
 } from "react-zoom-pan-pinch";
 import "./App.css";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
+import { Slide } from "react-toastify";
 import React, {
   useCallback,
   useEffect,
@@ -16,14 +19,17 @@ import Station from "./components/Station";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import { Autocomplete, TextField, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import $ from "jquery";
-import Cookies from "universal-cookie";
-
-const cookies = new Cookies();
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const App = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const transformComponentRef = useRef(null);
+  const params = new URLSearchParams(location.search);
+  const updatedSidRef = useRef(params.get("sid"));
   const [selectedType, setSelectedType] = useState(null);
   const [stationsData, setStationsData] = useState({
     startVertical: [
@@ -151,36 +157,29 @@ const App = () => {
   });
 
   const [queryParams, setQueryParams] = useState({});
-  const location = useLocation();
-  const params = new URLSearchParams(location.search);
-  const updatedSidRef = useRef(params.get("sid"));
+  const [firstTimeLoaded, setFirstTimeLoaded] = useState(true);
+  const [units, setUnits] = useState([]);
+  const [filteredTrains, setFilteredTrains] = useState([]);
+  const [errorOccored, setErrorOccored] = useState(false);
 
   useEffect(() => {
-    const queryParamsObject = {
-      sid: params.get("sid"),
-      user: params.get("user"),
-      baseUrl: params.get("baseUrl"),
-      hostUrl: params.get("hostUrl"),
-      b: params.get("b"),
-      v: params.get("v"),
-    };
-    setQueryParams(queryParamsObject);
-  }, [location]);
-
-  useEffect(() => {
-    if (updatedSidRef.current) {
-      cookies.set("sid", updatedSidRef.current);
+    if (firstTimeLoaded) {
+      const queryParamsObject = {
+        sid: params.get("sid"),
+        user: params.get("user"),
+        baseUrl: params.get("baseUrl"),
+        hostUrl: params.get("hostUrl"),
+        b: params.get("b"),
+        v: params.get("v"),
+      };
+      setFirstTimeLoaded(false);
+      setQueryParams(queryParamsObject);
     }
-  }, [updatedSidRef.current]);
+  }, [location, firstTimeLoaded]);
 
   const renewSession = useCallback(() => {
-    if (queryParams.baseUrl && updatedSidRef.current?.length) {
-      const sid = cookies.get("sid");
-      const targetUrl = `${
-        queryParams.baseUrl
-      }/wialon/ajax.html?svc=core/duplicate&params={"operateAs":""}&sid=${
-        sid ? sid : updatedSidRef.current
-      }`;
+    if (queryParams.baseUrl) {
+      const targetUrl = `${queryParams.baseUrl}/wialon/ajax.html?svc=core/duplicate&params={"operateAs":""}&sid=${updatedSidRef.current}`;
       $.ajax({
         type: "GET",
         url: targetUrl,
@@ -188,26 +187,30 @@ const App = () => {
         success: function (response) {
           if (response && response.eid) {
             updatedSidRef.current = response.eid;
-            cookies.set("uid", response.eid);
-            console.log("Session ID renewed:", response.eid);
+            const newParams = new URLSearchParams(location.search);
+            newParams.set("sid", response.eid);
+            navigate(`${location.pathname}?${newParams.toString()}`, {
+              replace: true,
+            });
           } else {
             console.error("Failed to renew session ID", response);
+            setErrorOccored(true);
           }
         },
         error: function (error) {
           console.error("Error renewing session ID:", error);
+          setErrorOccored(true);
         },
       });
     }
   }, [queryParams.baseUrl]);
 
-  const fetchTrainsLocations = useCallback(async () => {
-    if (updatedSidRef.current?.length && queryParams.baseUrl) {
-      let trains = [];
-      const uid = cookies.get("uid");
-      const sid = updatedSidRef.current || uid;
+  const getUnits = async () => {
+    const sid = updatedSidRef.current;
+    const baseUrl = params.get("baseUrl");
 
-      const url = `${queryParams.baseUrl}/wialon/ajax.html?svc=core/search_items&params={"spec":{"itemsType":"avl_unit","propName":"sys_name","propValueMask":"*","sortType":"sys_last_message"},"force":1,"flags":1025,"from":0,"to":0}&sid=${sid}`;
+    if (baseUrl && sid) {
+      const url = `${baseUrl}/wialon/ajax.html?svc=core/search_items&params={"spec":{"itemsType":"avl_unit","propName":"sys_name","propValueMask":"*","sortType":"sys_last_message"},"force":1,"flags":1025,"from":0,"to":0}&sid=${sid}`;
 
       try {
         const response = await $.ajax({
@@ -215,99 +218,121 @@ const App = () => {
           url: url,
           dataType: "jsonp",
         });
-
         if (response && response.items && response.items.length) {
-          const units = response.items;
-          for (let unit of units) {
+          let trains = [];
+          const unitsRes = response.items;
+          unitsRes.map((unit) => {
             const obj = {
-              id: unit.id,
+              id: unit?.id,
               name: unit.nm,
               lon: unit.pos?.x,
               lat: unit.pos?.y,
+              lmsgt: unit.lmsg?.t,
+              type: (() => {
+                const currentTime = Math.floor(Date.now() / 1000);
+                const timeDiffMinutes = (currentTime - unit.lmsg?.t) / 60;
+
+                if (timeDiffMinutes < 10) return 1;
+                if (timeDiffMinutes <= 30) return 2;
+                return 3;
+              })(),
+              color: (() => {
+                const currentTime = Math.floor(Date.now() / 1000);
+                const timeDiffMinutes = (currentTime - unit.lmsg?.t) / 60;
+
+                if (timeDiffMinutes < 10) return "#0f0";
+                if (timeDiffMinutes <= 30) return "#ff0";
+                return "#f00";
+              })(),
             };
             trains.push(obj);
-          }
-
-          const paramsArray = [];
-          const mainURL = `https://hst-api.wialon.com/wialon/ajax.html?svc=resource/get_zones_by_point&params={"spec":{"zoneId":{"18636489":[1,2,5,7,11,12,18,29,35,41,572,575,577,578,579,580,581,582,583,584,585,586,587,588,589,590,591,592,593,594,596,597,598,599,600,601,602,603,604,605,606,607,609,610,611,612,613,614,615,617,618,620,659,662,663,664,666,668,673,675,679,680,681,687,689,691,694,696,698,699,702,705,707,709,711,713,715,717,719,721,723,725,727,729,732,734,737,739,742,744,746,748,750,752,754,758,760,762,764,769,771,773,775,779,782,790,793,795,798,801,806,808,810,812,814,816,818,820,822,824,828,830,1492]}`;
-
-          for (let train of trains) {
-            if (train.lat && train.lon && updatedSidRef.current) {
-              const param = {
-                ...train,
-                location: `"lat":${train.lat},"lon":${train.lon}}}&sid=${updatedSidRef.current}`,
-              };
-              paramsArray.push(param);
-            }
-          }
-
-          for (let param of paramsArray) {
-            await $.ajax({
-              type: "GET",
-              url: mainURL + "," + param.location,
-              dataType: "jsonp",
-              success: function (response) {
-                if (response) {
-                  if (
-                    param.id &&
-                    trains.length &&
-                    response["18636489"] &&
-                    response["18636489"].length
-                  ) {
-                    const train = trains.find((tr) => tr.id === param.id);
-                    const newTrainObj = {
-                      ...train,
-                      station_id: response["18636489"][0],
-                    };
-                    trains = trains.filter((tr) => tr.id !== newTrainObj.id);
-                    trains.push(newTrainObj);
-                  }
-                } else {
-                  console.error("Failed to renew session ID", response);
-                }
-              },
-              error: function (error) {
-                console.error("Error fetching trains locations:", error);
-              },
-            });
-          }
-          if (trains.length && trains?.some((t) => t?.station_id)) {
-            setStationsData((prevState) => ({
-              ...prevState,
-              trains: trains,
-              type: 1,
-            }));
-          }
-        } else {
-          console.error("No units to be found:", response);
+          });
+          setUnits(trains);
         }
       } catch (error) {
-        console.log("Network error:", error);
+        console.log("Error fetching units:", error);
+        setErrorOccored(true);
+      }
+    }
+  };
+
+  const getStations = async () => {
+    const sid = updatedSidRef.current;
+    const newTrainsArr = [];
+    if (units?.length && sid) {
+      const paramsArray = [];
+
+      const stationsArray = [
+        1, 2, 5, 7, 11, 12, 18, 29, 35, 41, 572, 575, 577, 578, 579, 580, 581,
+        582, 583, 584, 585, 586, 587, 588, 589, 590, 591, 592, 593, 594, 596,
+        597, 598, 599, 600, 601, 602, 603, 604, 605, 606, 607, 609, 610, 611,
+        612, 613, 614, 615, 617, 618, 620, 659, 662, 663, 664, 666, 668, 673,
+        675, 679, 680, 681, 687, 689, 691, 694, 696, 698, 699, 702, 705, 707,
+        709, 711, 713, 715, 717, 719, 721, 723, 725, 727, 729, 732, 734, 737,
+        739, 742, 744, 746, 748, 750, 752, 754, 758, 760, 762, 764, 769, 771,
+        773, 775, 779, 782, 790, 793, 795, 798, 801, 806, 808, 810, 812, 814,
+        816, 818, 820, 822, 824, 828, 830, 1492,
+      ];
+
+      units.slice(0, 32).map((train) => {
+        if (train.lat && train.lon && updatedSidRef.current) {
+          paramsArray.push(
+            `{"svc":"resource/get_zones_by_point","params":{"spec":{"zoneId":{"18636489":[${stationsArray}]}, "lat":${train.lat},"lon":${train.lon}}}}`
+          );
+        }
+      });
+
+      const mainURL2 = `https://hst-api.wialon.com/wialon/ajax.html?svc=core/batch&params={"params":[${paramsArray}],"flags":0}&sid=${sid}`;
+
+      if (paramsArray?.length) {
+        try {
+          const res = await $.ajax({
+            method: "POST",
+            url: mainURL2,
+            dataType: "jsonp",
+          });
+          const stations = res?.map((item) => item["18636489"] || 0).flat();
+          newTrainsArr.splice(0, newTrainsArr.length);
+          units.map((unit, index) => {
+            const newUnitObj = {
+              ...unit,
+              station_id: stations[index],
+            };
+            newTrainsArr.push(newUnitObj);
+          });
+          setStationsData((prevState) => ({
+            ...prevState,
+            trains: newTrainsArr,
+          }));
+          console.log("Updated Trains Locations!");
+          toast.success("yes");
+        } catch (error) {
+          console.log("Couldn't update trains locations!", error);
+        }
+      } else {
+        console.log("Trains params array is empty!");
       }
     } else {
-      console.log("No sid", updatedSidRef.current);
+      console.log("There are no units!");
     }
-  }, [queryParams.baseUrl]);
+  };
 
   useEffect(() => {
     const renewSessionIntervalId = setInterval(renewSession, 60000);
     renewSession();
 
-    const fetchTrainsLocationsIntervalId = setInterval(
-      fetchTrainsLocations,
-      5000
-    );
-    fetchTrainsLocations();
+    const getUnitsIntervalId = setInterval(getUnits, 5000);
+    getUnits();
 
     return () => {
       clearInterval(renewSessionIntervalId);
-      clearInterval(fetchTrainsLocationsIntervalId);
+      clearInterval(getUnitsIntervalId);
     };
-  }, [renewSession, fetchTrainsLocations]);
+  }, [renewSession]);
 
   useEffect(() => {
-    fetchTrainsLocations();
-  }, []);
+    getStations();
+  }, [units]);
 
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
@@ -315,6 +340,7 @@ const App = () => {
   });
 
   useEffect(() => {
+    getUnits();
     const handleResize = () => {
       setWindowSize({
         width: window.innerWidth,
@@ -365,26 +391,34 @@ const App = () => {
 
   const trainTypes = useMemo(
     () => [
-      { id: 1, name: "Inactive train", color: "#f00" },
+      { id: 1, name: "Active train", color: "#0f0" },
       { id: 2, name: "In the process of launching", color: "#ff0" },
-      { id: 3, name: "Active train", color: "#0f0" },
+      { id: 3, name: "Inactive train", color: "#f00" },
     ],
     []
   );
 
-  const [filteredTrains, setFilteredTrains] = useState([]);
+  useEffect(() => {
+    if (stationsData?.trains?.length && selectedType?.id) {
+      setFilteredTrains(() => {
+        return stationsData?.trains?.filter(
+          (train) => train?.type === selectedType?.id
+        );
+      });
+    } else {
+      setFilteredTrains(() => {
+        return stationsData?.trains;
+      });
+    }
+  }, [selectedType, units]);
 
   useEffect(() => {
-    setFilteredTrains(() => {
-      if (selectedType && selectedType.id !== undefined) {
-        return stationsData.trains.filter(
-          (train) => train.type === selectedType.id
-        );
-      } else {
-        return [...stationsData.trains];
-      }
-    });
-  }, [selectedType]);
+    if (errorOccored) {
+      alert(
+        "خطأ اثناء استرجاع البيانات, الرجاء اعاده فتح الموقع من لوحة التحكم."
+      );
+    }
+  }, [errorOccored]);
 
   return (
     <div className="App">
@@ -441,7 +475,7 @@ const App = () => {
             getOptionLabel={(option) =>
               typeof option === "object" && option.name ? option.name : ""
             }
-            isOptionEqualToValue={(option, value) => option.id === value.id}
+            isOptionEqualToValue={(option, value) => option?.id === value?.id}
             onChange={(e, newValue) => setSelectedType(newValue)}
             clearIcon={
               <CloseIcon
@@ -515,7 +549,9 @@ const App = () => {
                       marginLeft={index === 0 ? 0 : "184px"}
                       left="-100px"
                       top={index % 2 === 0 ? "85px" : "-150px"}
-                      trains={filteredTrains}
+                      trains={filteredTrains?.filter(
+                        (tr) => tr?.station_id === station?.id
+                      )}
                       trainTypes={trainTypes}
                     />
                   );
@@ -545,7 +581,9 @@ const App = () => {
                         left="-103px"
                         top={index % 2 === 0 ? "130px" : "-220px"}
                         transform="rotate(-90deg)"
-                        trains={filteredTrains}
+                        trains={filteredTrains?.filter(
+                          (tr) => tr?.station_id === station?.id
+                        )}
                         trainTypes={trainTypes}
                       />
                     );
@@ -576,7 +614,9 @@ const App = () => {
                         left="-103px"
                         top={index % 2 === 0 ? "130px" : "-220px"}
                         transform="rotate(90deg)"
-                        trains={filteredTrains}
+                        trains={filteredTrains?.filter(
+                          (tr) => tr?.station_id === station?.id
+                        )}
                         trainTypes={trainTypes}
                       />
                     );
@@ -608,7 +648,9 @@ const App = () => {
                         left="-220px"
                         top="120px"
                         transform="rotate(127.3deg)"
-                        trains={filteredTrains}
+                        trains={filteredTrains?.filter(
+                          (tr) => tr?.station_id === station?.id
+                        )}
                         trainTypes={trainTypes}
                       />
                     );
@@ -638,7 +680,9 @@ const App = () => {
                         marginRight="740px"
                         left="-100px"
                         top={index % 2 === 0 ? "90px" : "-150px"}
-                        trains={filteredTrains}
+                        trains={filteredTrains?.filter(
+                          (tr) => tr?.station_id === station?.id
+                        )}
                         trainTypes={trainTypes}
                       />
                     );
@@ -669,7 +713,9 @@ const App = () => {
                         left="-105px"
                         top={index % 2 === 0 ? "120px" : "-210px"}
                         transform="rotate(90deg)"
-                        trains={filteredTrains}
+                        trains={filteredTrains?.filter(
+                          (tr) => tr?.station_id === station?.id
+                        )}
                         trainTypes={trainTypes}
                       />
                     );

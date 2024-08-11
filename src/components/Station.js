@@ -3,6 +3,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import "@fontsource/cairo/400.css";
 import "../App.css";
+import { Tooltip } from "@mui/material";
 
 function Station({
   index,
@@ -16,7 +17,6 @@ function Station({
   trainTypes,
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [stationTrains, setStationTrains] = useState([]);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -25,11 +25,6 @@ function Station({
   const handleClose = () => {
     setAnchorEl(null);
   };
-
-  useEffect(() => {
-    const s = trains.find((tr) => tr?.station_id === station?.id);
-    console.log("susu", s ? { station, s } : null);
-  }, []);
 
   return (
     <React.Fragment key={index}>
@@ -73,36 +68,37 @@ function Station({
               display: "flex",
               flexWrap: "wrap-reverse",
               gap: 5,
-              width: "230px",
+              width: "240px",
             }}
           >
-            {stationTrains?.slice(0, 3)?.map((train, index) => {
-              const trainType = trainTypes?.find(
-                (type) => type?.id === train?.type
-              );
+            {trains?.slice(0, 3)?.map((train, index) => {
               return (
-                <React.Fragment key={index}>
+                <Tooltip title={train?.name} key={index}>
                   <div
                     style={{
-                      width: "53px",
-                      height: "53px",
-                      backgroundColor: trainType?.color,
+                      width: "55px",
+                      height: "55px",
+                      backgroundColor: train?.color,
                       borderRadius: "50%",
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
                       animation:
-                        trainType?.color === "#0f0"
-                          ? "glow 0.7s infinite"
-                          : "none",
+                        train?.color === "#0f0" ? "glow 0.7s infinite" : "none",
                     }}
                   >
-                    <span style={{ fontSize: "26px" }}>{train?.id}</span>
+                    <span style={{ fontSize: "26px" }}>
+                      {
+                        train?.name
+                          ?.split("- ")
+                          [train?.name?.split(" - ").length - 1].split(" ")[0]
+                      }
+                    </span>
                   </div>
-                </React.Fragment>
+                </Tooltip>
               );
             })}
-            {stationTrains?.length && stationTrains?.length > 3 ? (
+            {trains?.length && trains?.length > 3 ? (
               <div>
                 <button
                   style={{
@@ -126,7 +122,7 @@ function Station({
                       marginTop: "3px",
                     }}
                   >
-                    + {stationTrains?.length - 3}
+                    + {trains?.length - 3}
                   </span>
                 </button>
                 <Menu
@@ -136,19 +132,16 @@ function Station({
                   open={Boolean(anchorEl)}
                   onClose={handleClose}
                 >
-                  {stationTrains?.map((train, index) => {
-                    const trainType = trainTypes?.find(
-                      (type) => type?.id === train?.type
-                    );
+                  {trains?.map((train, index) => {
                     return (
                       <MenuItem onClick={handleClose} key={index}>
                         <div
                           style={{
                             // borderBottom:
-                            //   stationTrains?.length - 1 !== index
+                            //   trains?.length - 1 !== index
                             //     ? "1px solid #ababab"
                             //     : "none",
-                            borderLeft: `10px solid ${trainType?.color}`,
+                            borderLeft: `10px solid ${train?.color}`,
                             paddingLeft: "10px",
                             paddingBottom: "5px",
                             width: "100%",
@@ -162,13 +155,13 @@ function Station({
                                 gap: 5,
                               }}
                             >
-                              Train ID.
+                              Train
                               <span
                                 style={{
                                   fontSize: "22px",
                                 }}
                               >
-                                {train?.id}
+                                {train?.name}
                               </span>
                             </div>
                             <div
