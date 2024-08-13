@@ -174,13 +174,14 @@ const App = () => {
       };
       setFirstTimeLoaded(false);
       setQueryParams(queryParamsObject);
+      renewSession();
     }
   }, [location, firstTimeLoaded]);
 
-  const renewSession = useCallback(() => {
+  const renewSession = async () => {
     if (queryParams.baseUrl) {
       const targetUrl = `${queryParams.baseUrl}/wialon/ajax.html?svc=core/duplicate&params={"operateAs":""}&sid=${updatedSidRef.current}`;
-      $.ajax({
+      await $.ajax({
         type: "GET",
         url: targetUrl,
         dataType: "jsonp",
@@ -203,7 +204,7 @@ const App = () => {
         },
       });
     }
-  }, [queryParams.baseUrl]);
+  };
 
   const getUnits = async () => {
     const sid = updatedSidRef.current;
@@ -274,7 +275,7 @@ const App = () => {
         816, 818, 820, 822, 824, 828, 830, 1492,
       ];
 
-      units.slice(0, 32).map((train) => {
+      units.map((train) => {
         if (train.lat && train.lon && updatedSidRef.current) {
           paramsArray.push(
             `{"svc":"resource/get_zones_by_point","params":{"spec":{"zoneId":{"18636489":[${stationsArray}]}, "lat":${train.lat},"lon":${train.lon}}}}`
@@ -282,14 +283,28 @@ const App = () => {
         }
       });
 
-      const mainURL2 = `https://hst-api.wialon.com/wialon/ajax.html?svc=core/batch&params={"params":[${paramsArray}],"flags":0}&sid=${sid}`;
+      const mainURL2 = `https://hst-api.wialon.com/wialon/ajax.html?svc=core/batch&sid=${sid}`;
 
       if (paramsArray?.length) {
         try {
+          const formData = new FormData();
+          formData.append("params", "[" + paramsArray + "]");
+          formData.append("flags", 0);
+
           const res = await $.ajax({
             method: "POST",
+            enctype: "application/json",
+            processData: false, // Necessary for formData
+            contentType: false, // Necessary for formData
+            crossDomain: true,
+            // dataType: "jsonp",
             url: mainURL2,
-            dataType: "jsonp",
+            headers: {
+                'Access-Control-Allow-Origin': '*', // Set the allowed origin, use '*' for any origin
+                'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE', // Specify allowed methods
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization' // Specify allowed headers
+            },
+            data: formData,
           });
           const stations = res?.map((item) => item["18636489"] || 0).flat();
           newTrainsArr.splice(0, newTrainsArr.length);
@@ -318,17 +333,17 @@ const App = () => {
   };
 
   useEffect(() => {
-    const renewSessionIntervalId = setInterval(renewSession, 60000);
-    renewSession();
+    // const renewSessionIntervalId = setInterval(renewSession, 60000);
+    // renewSession();
 
     const getUnitsIntervalId = setInterval(getUnits, 5000);
     getUnits();
 
     return () => {
-      clearInterval(renewSessionIntervalId);
+      // clearInterval(renewSessionIntervalId);
       clearInterval(getUnitsIntervalId);
     };
-  }, [renewSession]);
+  }, []);
 
   useEffect(() => {
     getStations();
