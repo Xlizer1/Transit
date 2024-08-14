@@ -23,6 +23,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import $ from "jquery";
 import axios from "axios";
 import { toast } from "react-toastify";
+import MakeRequest from "./Network/makeRequest";
 
 const App = () => {
   const navigate = useNavigate();
@@ -181,11 +182,14 @@ const App = () => {
   const renewSession = async () => {
     if (queryParams.baseUrl) {
       const targetUrl = `${queryParams.baseUrl}/wialon/ajax.html?svc=core/duplicate&params={"operateAs":""}&sid=${updatedSidRef.current}`;
-      await $.ajax({
-        type: "GET",
-        url: targetUrl,
-        dataType: "jsonp",
-        success: function (response) {
+
+      const request = new MakeRequest(targetUrl, {
+        method: "GET",
+      });
+
+      request
+        .sendRequest()
+        .then((response) => {
           if (response && response.eid) {
             updatedSidRef.current = response.eid;
             const newParams = new URLSearchParams(location.search);
@@ -197,12 +201,10 @@ const App = () => {
             console.error("Failed to renew session ID", response);
             setErrorOccored(true);
           }
-        },
-        error: function (error) {
-          console.error("Error renewing session ID:", error);
-          setErrorOccored(true);
-        },
-      });
+        })
+        .catch((error) => {
+          console.error("Request failed:", error);
+        });
     }
   };
 
@@ -214,42 +216,48 @@ const App = () => {
       const url = `${baseUrl}/wialon/ajax.html?svc=core/search_items&params={"spec":{"itemsType":"avl_unit","propName":"sys_name","propValueMask":"*","sortType":"sys_last_message"},"force":1,"flags":1025,"from":0,"to":0}&sid=${sid}`;
 
       try {
-        const response = await $.ajax({
-          type: "GET",
-          url: url,
-          dataType: "jsonp",
+        const request = new MakeRequest(url, {
+          method: "GET",
         });
-        if (response && response.items && response.items.length) {
-          let trains = [];
-          const unitsRes = response.items;
-          unitsRes.map((unit) => {
-            const obj = {
-              id: unit?.id,
-              name: unit.nm,
-              lon: unit.pos?.x,
-              lat: unit.pos?.y,
-              lmsgt: unit.lmsg?.t,
-              type: (() => {
-                const currentTime = Math.floor(Date.now() / 1000);
-                const timeDiffMinutes = (currentTime - unit.lmsg?.t) / 60;
 
-                if (timeDiffMinutes < 10) return 1;
-                if (timeDiffMinutes <= 30) return 2;
-                return 3;
-              })(),
-              color: (() => {
-                const currentTime = Math.floor(Date.now() / 1000);
-                const timeDiffMinutes = (currentTime - unit.lmsg?.t) / 60;
+        request
+          .sendRequest()
+          .then((response) => {
+            if (response && response.items && response.items.length) {
+              let trains = [];
+              const unitsRes = response.items;
+              unitsRes.map((unit) => {
+                const obj = {
+                  id: unit?.id,
+                  name: unit.nm,
+                  lon: unit.pos?.x,
+                  lat: unit.pos?.y,
+                  lmsgt: unit.lmsg?.t,
+                  type: (() => {
+                    const currentTime = Math.floor(Date.now() / 1000);
+                    const timeDiffMinutes = (currentTime - unit.lmsg?.t) / 60;
 
-                if (timeDiffMinutes < 10) return "#0f0";
-                if (timeDiffMinutes <= 30) return "#ff0";
-                return "#f00";
-              })(),
-            };
-            trains.push(obj);
+                    if (timeDiffMinutes < 10) return 1;
+                    if (timeDiffMinutes <= 30) return 2;
+                    return 3;
+                  })(),
+                  color: (() => {
+                    const currentTime = Math.floor(Date.now() / 1000);
+                    const timeDiffMinutes = (currentTime - unit.lmsg?.t) / 60;
+
+                    if (timeDiffMinutes < 10) return "#0f0";
+                    if (timeDiffMinutes <= 30) return "#ff0";
+                    return "#f00";
+                  })(),
+                };
+                trains.push(obj);
+              });
+              setUnits(trains);
+            }
+          })
+          .catch((error) => {
+            console.error("Request failed:", error);
           });
-          setUnits(trains);
-        }
       } catch (error) {
         console.log("Error fetching units:", error);
         setErrorOccored(true);
@@ -291,34 +299,34 @@ const App = () => {
           formData.append("params", "[" + paramsArray + "]");
           formData.append("flags", 0);
 
-          const res = await $.ajax({
+          const request = new MakeRequest(mainURL2, {
             method: "POST",
-            processData: false,
-            contentType: false,
-            crossDomain: true,
-            url: mainURL2,
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
-                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            },
             data: formData,
           });
-          const stations = res?.map((item) => item["18636489"] || 0).flat();
-          newTrainsArr.splice(0, newTrainsArr.length);
-          units.map((unit, index) => {
-            const newUnitObj = {
-              ...unit,
-              station_id: stations[index],
-            };
-            newTrainsArr.push(newUnitObj);
-          });
-          setStationsData((prevState) => ({
-            ...prevState,
-            trains: newTrainsArr,
-          }));
-          console.log("Updated Trains Locations!");
-          toast.success("yes");
+
+          request
+            .sendRequest()
+            .then((response) => {
+              const stations = response
+                ?.map((item) => item["18636489"] || 0)
+                .flat();
+              newTrainsArr.splice(0, newTrainsArr.length);
+              units.map((unit, index) => {
+                const newUnitObj = {
+                  ...unit,
+                  station_id: stations[index],
+                };
+                newTrainsArr.push(newUnitObj);
+              });
+              setStationsData((prevState) => ({
+                ...prevState,
+                trains: newTrainsArr,
+              }));
+              console.log("Updated Trains Locations!");
+            })
+            .catch((error) => {
+              console.error("Request failed:", error);
+            });
         } catch (error) {
           console.log("Couldn't update trains locations!", error);
         }
