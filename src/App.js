@@ -293,16 +293,14 @@ const App = () => {
 
           const res = await $.ajax({
             method: "POST",
-            enctype: "application/json",
-            processData: false, // Necessary for formData
-            contentType: false, // Necessary for formData
+            processData: false,
+            contentType: false,
             crossDomain: true,
-            // dataType: "jsonp",
             url: mainURL2,
             headers: {
-                'Access-Control-Allow-Origin': '*', // Set the allowed origin, use '*' for any origin
-                'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE', // Specify allowed methods
-                'Access-Control-Allow-Headers': 'Content-Type, Authorization' // Specify allowed headers
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
             },
             data: formData,
           });
